@@ -1,0 +1,71 @@
+{
+  "name": "@wcom/cli",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": "Rahim Alwer <rahim_alwer@hotmail.com>",
+  "description": "CLI tool to get your web component library ready for production.",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "@types/",
+  "homepage": "https://github.com/mihar-22/wc-cli",
+  "bugs": {
+    "url": "https://github.com/mihar-22/wc-cli"
+  },
+  "bin": {
+    "wcom": "cli.js"
+  },
+  "files": [
+    "cli.js",
+    "dist/",
+    "@types/"
+  ],
+  "scripts": {
+    "build": "rimraf dist && rimraf @types && npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "build:esm": "tsc --module es2015 --outDir dist/esm",
+    "build:watch": "yarn build:cjs --watch",
+    "lint": "eslint ./src --quiet --fix --ignore-path .gitignore",
+    "release": "semantic-release --branches main",
+    "test": "",
+    "test:watch": ""
+  },
+  "dependencies": {
+    "typescript": "^4.0.0",
+    "yargs": "^16.1.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^15.0.10",
+    "@typescript-eslint/eslint-plugin": "^4.9.0",
+    "@typescript-eslint/parser": "^4.9.0",
+    "eslint": "^7.14.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "lit-element": "^2.4.0",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^17.0.0"
+  },
+  "keywords": [
+    "web-components",
+    "cli",
+    "production ready",
+    "analyzer",
+    "scaffold",
+    "transformer",
+    "documentation",
+    "docs",
+    "json",
+    "vscode",
+    "types",
+    "typescript",
+    "markdown",
+    "wrapper",
+    "generator",
+    "react",
+    "vue",
+    "angular",
+    "svelte"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
