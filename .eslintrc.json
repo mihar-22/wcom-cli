@@ -12,6 +12,7 @@
   ],
   "rules": {
     "no-console": "off",
+    "no-restricted-syntax": "off",
     "default-case": "off",
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",

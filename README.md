@@ -16,9 +16,16 @@
 
 ## Introduction
 
-> This library wouldn't be possible without the following resources: [web-component-analyzer](https://github.com/runem/web-component-analyzer) and [stencil](https://github.com/ionic-team/stencil).
-
 wip.
+
+## Caveats
+
+- only lit element atm
+- @customElement
+- has to be exported
+- @prop, methods, @event (use wc-events) - must be public
+- does not follow extends or mixins
+- cssprops, parts and slots must be in component definition doc
 
 ## Install
 
