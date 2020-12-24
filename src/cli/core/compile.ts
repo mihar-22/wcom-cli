@@ -22,7 +22,6 @@ import { log, LogLevel } from '../log';
 const defaultOptions: CompilerOptions = {
   noEmitOnError: false,
   allowJs: true,
-  maxNodeModuleJsDepth: 3,
   experimentalDecorators: true,
   target: ScriptTarget.Latest,
   downlevelIteration: true,
@@ -31,6 +30,7 @@ const defaultOptions: CompilerOptions = {
   moduleResolution: ModuleResolutionKind.NodeJs,
   esModuleInterop: true,
   noEmit: true,
+  pretty: true,
   allowSyntheticDefaultImports: true,
   allowUnreachableCode: true,
   allowUnusedLabels: true,
@@ -52,15 +52,6 @@ export function readTsConfigFile(root: string) {
     ? readConfigFile(configPath!, sys.readFile).config
     : undefined;
 
-  if (!isUndefined(tsConfig) && !(tsConfig.compilerOptions.experimentalDecorators)) {
-    log(
-      () => '`compilerOptions.experimentalDecorators` is required, turning it on by default',
-      LogLevel.Warn,
-    );
-
-    tsConfig.compilerOptions.experimentalDecorators = true;
-  }
-
   return tsConfig;
 }
 
@@ -77,14 +68,15 @@ export function compileOnce(
 }
 
 export function compileAndWatch(
-  filePaths: string[],
+  root: string,
+  configFileName: string,
   options: CompilerOptions = defaultOptions,
   onProgramCreate: (program: Program) => void | Promise<void>,
 ) {
-  filePaths = Array.isArray(filePaths) ? filePaths : [filePaths];
+  options.baseUrl = root;
 
   const host = createWatchCompilerHost(
-    filePaths,
+    configFileName,
     options,
     sys,
     createSemanticDiagnosticsBuilderProgram,
@@ -97,5 +89,5 @@ export function compileAndWatch(
     postProgramCreateRef!(builderProgram);
   };
 
-  createWatchProgram(host);
+  return createWatchProgram(host);
 }

@@ -7,7 +7,7 @@ import {
 } from './log';
 
 export function cli() {
-  const { argv } = yargs
+  yargs
     .usage('Usage: $0 <command> [glob..] [options]')
     .command<TransformCommandConfig>({
     command: ['transform [glob..]', '$0'],
@@ -43,6 +43,15 @@ export function cli() {
       alias: 't',
       requiresArg: true,
       default: ['json', 'vscode', 'types'],
+    })
+    .option('tsconfig', {
+      describe: 'The name of the TS config file that\'ll be used for watch mode.',
+      string: true,
+      default: 'tsconfig.json',
+    })
+    .option('corePkgName', {
+      describe: 'The name of the core package contains the your web components (eg: @wcom/core).',
+      string: true,
     })
     .option('dry', {
       describe: 'Output to console instead of writing to files',
@@ -114,10 +123,6 @@ export function cli() {
     .help('h')
     .wrap(110)
     .strict()
-    .alias('h', 'help');
-
-  if (argv.verbose) {
-    /* eslint-disable-next-line no-console */
-    console.log('CLI options:', argv);
-  }
+    .alias('h', 'help')
+    .argv;
 }

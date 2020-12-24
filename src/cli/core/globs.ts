@@ -1,5 +1,6 @@
 import fastGlob from 'fast-glob';
 import { existsSync, lstatSync } from 'fs';
+import normalizePath from 'normalize-path';
 import { arrayFlat } from '../../utils/array';
 import { TransformCommandConfig } from '../commands/transform/TransformCommandConfig';
 import { log, LogLevel } from '../log';
@@ -15,7 +16,7 @@ export async function parseGlobs(
   if (globs.length === 0) { globs = DEFAULT_GLOBS; }
   const filePaths = await expandGlobs(globs, config);
   log(() => filePaths, LogLevel.Verbose);
-  return filePaths;
+  return filePaths.map((filePath) => normalizePath(filePath));
 }
 
 async function expandGlobs(

@@ -1,36 +1,32 @@
-export enum Transformer {
-  Json = 'json',
-  Vscode = 'vscode',
-  Types = 'types',
-  Markdown = 'markdown',
-  React = 'react',
-  Vue = 'vue',
-  VueNext = 'vue-next',
-  Svelte = 'svelte',
-  Angular = 'angular',
-  ALL = 'all',
-}
+import { DiscovererId } from '../../../discover/Discoverer';
+import { TransformerId } from '../../../transform/Transformer';
+import { AngularTransformerConfig } from '../../../transform/transformers/angular/AngularTransformerConfig';
+import { JsonTransformerConfig } from '../../../transform/transformers/json/JsonTransformerConfig';
+import { MarkdownTransformerConfig } from '../../../transform/transformers/markdown/MarkdownTransformerConfig';
+import { ReactTransformerConfig } from '../../../transform/transformers/react/ReactTransformerConfig';
+import { SvelteTransformerConfig } from '../../../transform/transformers/svelte/SvelteTransformerConfig';
+import { TypesTransformerConfig } from '../../../transform/transformers/types/TypesTransformerConfig';
+import { VsCodeTransformerConfig } from '../../../transform/transformers/vscode/VsCodeTransformerConfig';
+import { VueTransformerConfig } from '../../../transform/transformers/vue/VueTransformerConfig';
+import { VueNextTransformerConfig } from '../../../transform/transformers/vue-next/VueNextTransformerConfig';
 
-export enum Discoverer {
-  Lit = 'lit',
-}
-
-export interface TransformCommandConfig {
+export interface TransformCommandConfig extends
+  AngularTransformerConfig,
+  JsonTransformerConfig,
+  MarkdownTransformerConfig,
+  ReactTransformerConfig,
+  SvelteTransformerConfig,
+  TypesTransformerConfig,
+  VsCodeTransformerConfig,
+  VueTransformerConfig,
+  VueNextTransformerConfig {
   [id: string]: any
-  discoverer: Discoverer
-  transformers: Transformer[]
+  discovery: DiscovererId
+  transformers: TransformerId[]
   logLevel: string
   dry: boolean
   watch: boolean
   globs?: string[]
   cwd: string
-  jsonOutFile: string
-  vscodeOutFile: string
-  typesOutFile: string
-  reactOutDir: string
-  markdownOutDir: string
-  vueOutDir: string
-  vueNextOutDir: string
-  svelteOutputDir: string
-  angularOutputDir: string
+  tsconfig: string
 }
