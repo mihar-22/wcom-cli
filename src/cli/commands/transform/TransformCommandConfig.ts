@@ -7,8 +7,8 @@ import { ReactTransformerConfig } from '../../../transform/transformers/react/Re
 import { SvelteTransformerConfig } from '../../../transform/transformers/svelte/SvelteTransformerConfig';
 import { TypesTransformerConfig } from '../../../transform/transformers/types/TypesTransformerConfig';
 import { VsCodeTransformerConfig } from '../../../transform/transformers/vscode/VsCodeTransformerConfig';
-import { VueTransformerConfig } from '../../../transform/transformers/vue/VueTransformerConfig';
 import { VueNextTransformerConfig } from '../../../transform/transformers/vue-next/VueNextTransformerConfig';
+import { VueTransformerConfig } from '../../../transform/transformers/vue/VueTransformerConfig';
 
 export interface TransformCommandConfig extends
   AngularTransformerConfig,
@@ -20,13 +20,13 @@ export interface TransformCommandConfig extends
   VsCodeTransformerConfig,
   VueTransformerConfig,
   VueNextTransformerConfig {
-  [id: string]: any
-  discovery: DiscovererId
-  transformers: TransformerId[]
-  logLevel: string
-  dry: boolean
-  watch: boolean
-  globs?: string[]
-  cwd: string
-  tsconfig: string
+  [id: string]: any;
+  discovery: DiscovererId;
+  transformers: TransformerId[];
+  logLevel: string;
+  dry: boolean;
+  watch: boolean;
+  globs?: string[];
+  cwd: string;
+  tsconfig: string;
 }

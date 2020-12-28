@@ -42,15 +42,15 @@ export function cli() {
       array: true,
       alias: 't',
       requiresArg: true,
-      default: ['json', 'vscode', 'types'],
+      default: ['vscode', 'types'],
     })
     .option('tsconfig', {
-      describe: 'The name of the TS config file that\'ll be used for watch mode.',
+      describe: 'The name of the TS config file that\'ll be used for watch mode',
       string: true,
       default: 'tsconfig.json',
     })
     .option('corePkgName', {
-      describe: 'The name of the core package contains the your web components (eg: @wcom/core).',
+      describe: 'The name of the core package contains the your web components (eg: @wcom/core)',
       string: true,
     })
     .option('dry', {
@@ -65,14 +65,14 @@ export function cli() {
       default: false,
     })
     .option('logLevel', {
-      describe: 'Select logging level.',
+      describe: 'Select logging level',
       nArgs: 1,
       choices: ['silent', 'error', 'warn', 'info', 'verbose'],
       default: 'info',
     })
     .option('cwd', {
       string: true,
-      describe: 'The base path to use when emitting files (useful when working with monorepo)',
+      describe: 'The base path to use when emitting files (useful when working inside a monorepo)',
       default: process.cwd(),
     })
     .option('jsonOutFile', {
@@ -96,27 +96,27 @@ export function cli() {
     })
     .option('reactOutDir', {
       describe: 'The path to the directory where the React components should be output relative to `cwd`',
-      default: '../react/src/components',
+      default: '../integrations/react/src/components',
       string: true,
     })
     .option('vueOutDir', {
       describe: 'The path to the directory where the Vue 2 components should be output relative to `cwd`',
-      default: '../vue/src/components',
+      default: '../integrations/vue/src/components',
       string: true,
     })
     .option('vueNextOutDir', {
       describe: 'The path to the directory where the Vue 3 components should be output relative to `cwd`',
-      default: '../vue-next/src/components',
+      default: '../integrations/vue-next/src/components',
       string: true,
     })
     .option('svelteOutputDir', {
       describe: 'The path to the directory where the Svelte components should be output relative to `cwd`',
-      default: '../svelte/src/components',
+      default: '../integrations/svelte/src/components',
       string: true,
     })
     .option('angularOutputDir', {
       describe: 'The path to the directory where the Angular components should be output relative to `cwd`',
-      default: '../angular/components',
+      default: '../integrations/angular/components',
       string: true,
     })
     .alias('v', 'version')

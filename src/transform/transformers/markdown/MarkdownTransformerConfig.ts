@@ -1,3 +1,4 @@
 export interface MarkdownTransformerConfig {
-  markdownOutDir: string
+  cwd: string;
+  markdownOutDir: string;
 }

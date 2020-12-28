@@ -1,4 +1,5 @@
 export interface ReactTransformerConfig {
-  corePkgName: string
-  reactOutDir: string
+  cwd: string;
+  corePkgName: string;
+  reactOutDir: string;
 }

@@ -1,4 +1,5 @@
 export interface SvelteTransformerConfig {
-  corePkgName: string
-  svelteOutputDir: string
+  cwd: string;
+  corePkgName: string;
+  svelteOutputDir: string;
 }

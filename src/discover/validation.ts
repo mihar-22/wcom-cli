@@ -15,9 +15,9 @@ export function validateComponent(
   const tagError = validateComponentTag(component.tagName);
   if (!isUndefined(tagError)) {
     logWithNode(
-      tagError, 
-      component.declaration.decorators!.find(isDecoratorNamed(customElementDecoratorName))!, 
-      LogLevel.Error
+      tagError,
+      component.declaration.decorators!.find(isDecoratorNamed(customElementDecoratorName))!,
+      LogLevel.Error,
     );
   }
 
@@ -92,6 +92,7 @@ export const validateComponentTag = (tag: string) => {
 
   if (tag.lastIndexOf('-') === tag.length - 1) {
     return `\`${tag}\` tag cannot end with a dash (-).`;
-  
+  }
 
+  return undefined;
 };

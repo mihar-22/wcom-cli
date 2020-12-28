@@ -1,6 +1,7 @@
 import { TransformCommandConfig } from '../cli/commands/transform/TransformCommandConfig';
+import { log, LogLevel } from '../cli/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
-import { TransformerId, Transformer, TransformerConstructor } from './Transformer';
+import { TransformerId, Transformer } from './Transformer';
 import { AngularTransformer } from './transformers/angular/AngularTransformer';
 import { JsonTransformer } from './transformers/json/JsonTransformer';
 import { MarkdownTransformer } from './transformers/markdown/MarkdownTransformer';
@@ -8,73 +9,43 @@ import { ReactTransformer } from './transformers/react/ReactTransformer';
 import { SvelteTransformer } from './transformers/svelte/SvelteTransformer';
 import { TypesTransformer } from './transformers/types/TypesTransformer';
 import { VsCodeTransformer } from './transformers/vscode/VsCodeTransformer';
-import { VueTransformer } from './transformers/vue/VueTransformer';
 import { VueNextTransformer } from './transformers/vue-next/VueNextTransformer';
+import { VueTransformer } from './transformers/vue/VueTransformer';
 
-const BUILD_CACHE = new Map<TransformerId, Transformer>();
+export type TransformerMapper = {
+  [id in TransformerId]: Transformer | undefined
+};
 
-export function transform(
+export const TransformerMap: TransformerMapper = Object.freeze({
+  [TransformerId.Angular]: AngularTransformer,
+  [TransformerId.Json]: JsonTransformer,
+  [TransformerId.Markdown]: MarkdownTransformer,
+  [TransformerId.React]: ReactTransformer,
+  [TransformerId.Svelte]: SvelteTransformer,
+  [TransformerId.Types]: TypesTransformer,
+  [TransformerId.VsCode]: VsCodeTransformer,
+  [TransformerId.Vue]: VueTransformer,
+  [TransformerId.VueNext]: VueNextTransformer,
+  [TransformerId.ALL]: undefined,
+});
+
+const AllTransformers = Object.keys(TransformerMap)
+  .filter((key) => key !== TransformerId.ALL)
+  .map((key) => TransformerMap[key as TransformerId]);
+
+export async function transform(
   components: ComponentMeta[],
   transformerId: TransformerId,
   config: TransformCommandConfig,
-) {
-  const transformers = transformerFactory(transformerId, config);
-  transformers.forEach((transformer) => { transformer.transform(components); });
-}
+): Promise<void> {
+  log(() => `Starting ${transformerId} transformation`, LogLevel.Verbose);
 
-function transformerFactory(id: TransformerId, config: TransformCommandConfig) {
-  const transformers: Transformer[] = [];
-
-  if (id === TransformerId.ALL) {
-    Object.values(TransformerId)
-      .filter((transformer) => transformer !== TransformerId.ALL)
-      .forEach((transformer) => { transformers.push(buildTransformer(transformer, config)); });
-  } else {
-    transformers.push(buildTransformer(id, config));
+  if (transformerId === TransformerId.ALL) {
+    await Promise.all(AllTransformers
+      .map((transformer) => transformer!.transform(components, config)));
+    return;
   }
 
-  return transformers;
-}
-
-function buildTransformer(id: TransformerId, config: TransformCommandConfig) {
-  if (BUILD_CACHE.has(id)) return BUILD_CACHE.get(id)!;
-
-  let TransformerCtor: TransformerConstructor;
-
-  switch (id) {
-    case TransformerId.Json:
-      TransformerCtor = JsonTransformer;
-      break;
-    case TransformerId.Vscode:
-      TransformerCtor = VsCodeTransformer;
-      break;
-    case TransformerId.Types:
-      TransformerCtor = TypesTransformer;
-      break;
-    case TransformerId.Markdown:
-      TransformerCtor = MarkdownTransformer;
-      break;
-    case TransformerId.Angular:
-      TransformerCtor = AngularTransformer;
-      break;
-    case TransformerId.React:
-      TransformerCtor = ReactTransformer;
-      break;
-    case TransformerId.Svelte:
-      TransformerCtor = SvelteTransformer;
-      break;
-    case TransformerId.Vue:
-      TransformerCtor = VueTransformer;
-      break;
-    case TransformerId.VueNext:
-      TransformerCtor = VueNextTransformer;
-      break;
-    default:
-      TransformerCtor = JsonTransformer;
-      break;
-  }
-
-  const transformer = new TransformerCtor({ ...config });
-  BUILD_CACHE.set(id, transformer);
-  return transformer;
+  await TransformerMap[transformerId]!.transform(components, config);
+  log(() => `Finished ${transformerId} transformation`, LogLevel.Verbose);
 }

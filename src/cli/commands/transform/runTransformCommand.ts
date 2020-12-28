@@ -33,8 +33,6 @@ export async function run(
   paths?: string[],
 ) {
   const startTime = process.hrtime();
-  log(() => 'Starting transformations', LogLevel.Info);
-
   const validFilePaths = new Set(paths ?? await parseGlobs(glob, { ...config }));
 
   const sourceFiles = program
@@ -42,15 +40,16 @@ export async function run(
     .filter((sf) => validFilePaths.has(normalizePath(sf.fileName)))
     .sort((sfA, sfB) => (sfA.fileName > sfB.fileName ? 1 : -1));
 
+  const noOfFiles = sourceFiles.length;
+  const noOfFilesText = green(`${noOfFiles} ${(noOfFiles === 1) ? 'file' : 'files'}`);
+  log(() => `Starting to transform ${(noOfFilesText)}`, LogLevel.Info);
+
   const components = discover(program, sourceFiles, config.discovery);
 
-  config.transformers.forEach((transformer) => {
-    transform(components, transformer, { ...config });
-  });
+  await Promise.all(config.transformers
+    .map((transformer) => transform(components, transformer, { ...config })));
 
   const totalTime = process.hrtime(startTime);
-  log(
-    () => `Finished transformations in ${green(`${((totalTime[0] * 1000) + (totalTime[1] / 1000000)).toFixed(2)}ms`)}`,
-    LogLevel.Info,
-  );
+  const totalTimeText = green(`${((totalTime[0] * 1000) + (totalTime[1] / 1000000)).toFixed(2)}ms`);
+  log(() => `Finished transforming ${noOfFilesText} in ${totalTimeText}`, LogLevel.Info);
 }

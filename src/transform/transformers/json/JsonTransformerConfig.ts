@@ -1,3 +1,4 @@
 export interface JsonTransformerConfig {
-  jsonOutFile: string
+  cwd: string;
+  jsonOutFile: string;
 }

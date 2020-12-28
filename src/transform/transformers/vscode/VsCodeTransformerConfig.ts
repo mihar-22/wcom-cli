@@ -1,3 +1,4 @@
 export interface VsCodeTransformerConfig {
-  vscodeOutFile: string
+  cwd: string;
+  vscodeOutFile: string;
 }

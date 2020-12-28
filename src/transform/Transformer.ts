@@ -2,7 +2,7 @@ import { ComponentMeta } from '../discover/ComponentMeta';
 
 export enum TransformerId {
   Json = 'json',
-  Vscode = 'vscode',
+  VsCode = 'vscode',
   Types = 'types',
   Markdown = 'markdown',
   React = 'react',
@@ -13,10 +13,6 @@ export enum TransformerId {
   ALL = 'all',
 }
 
-export interface TransformerConstructor<ConfigType = any> {
-  new(config: ConfigType): Transformer;
-}
-
-export interface Transformer {
-  transform(components: ComponentMeta[]): void
+export interface Transformer<ConfigType = any> {
+  transform(components: ComponentMeta[], config: ConfigType): Promise<void>
 }

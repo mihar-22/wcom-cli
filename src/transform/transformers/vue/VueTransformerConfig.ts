@@ -1,4 +1,4 @@
 export interface VueTransformerConfig {
-  corePkgName: string
-  vueOutDir: string
+  cwd: string;
+  vueOutDir: string;
 }

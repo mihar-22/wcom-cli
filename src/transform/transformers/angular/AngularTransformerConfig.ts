@@ -1,4 +1,5 @@
 export interface AngularTransformerConfig {
-  corePkgName: string
-  angularOutputDir: string
+  cwd: string;
+  corePkgName: string;
+  angularOutputDir: string;
 }

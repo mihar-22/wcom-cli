@@ -1,4 +1,4 @@
 export interface VueNextTransformerConfig {
-  corePkgName: string
-  vueNextOutDir: string
+  cwd: string;
+  vueNextOutDir: string;
 }

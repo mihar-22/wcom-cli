@@ -121,7 +121,7 @@ export const LitDiscoverer: Discoverer = {
           const relativeImportPath = escapeQuotes(importStmt.moduleSpecifier.getText());
           let absolutePathToImport = resolve(sourceDir, relativeImportPath);
 
-          if (absolutePathToImport.endsWith('js') || absolutePathToImport.endsWith('ts')) {
+          if (absolutePathToImport.endsWith('ts')) {
             absolutePathToImport = trimFileExt(absolutePathToImport);
           }
 

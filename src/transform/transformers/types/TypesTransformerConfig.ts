@@ -1,3 +1,4 @@
 export interface TypesTransformerConfig {
-  typesOutFile: string
+  cwd: string;
+  typesOutFile: string;
 }
