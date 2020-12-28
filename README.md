@@ -46,5 +46,6 @@ wip.
 
 ## Related Packages
 
+- [`wc-create-app`](https://github.com/mihar-22/wc-create-app): Set up a modern web component library by running one command.
 - [`wc-events`](https://github.com/mihar-22/wc-events): Event decorators and helpers for web components.
 - [`wc-context`](https://github.com/mihar-22/wc-context): Pass props down web component trees easily. 
