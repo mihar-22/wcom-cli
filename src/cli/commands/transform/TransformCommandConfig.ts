@@ -20,12 +20,12 @@ export interface TransformCommandConfig extends
   VsCodeTransformerConfig,
   VueTransformerConfig,
   VueNextTransformerConfig {
-  [id: string]: any;
   discovery: DiscovererId;
   transformers: TransformerId[];
   logLevel: string;
   dry: boolean;
   watch: boolean;
+  glob?: string[];
   globs?: string[];
   cwd: string;
   tsconfig: string;

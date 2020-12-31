@@ -3,7 +3,7 @@ import {
   isPropertyDeclaration, TypeChecker,
 } from 'typescript';
 import { resolve, dirname } from 'path';
-import { log, LogLevel } from '../../cli/log';
+import { log, LogLevel } from '../../core/log';
 import { escapeQuotes } from '../../utils/string';
 import { ComponentMeta, DocTag } from '../ComponentMeta';
 import { Discoverer } from '../Discoverer';

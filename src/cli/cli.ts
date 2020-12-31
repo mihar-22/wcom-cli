@@ -4,7 +4,7 @@ import { runTransformCommand } from './commands/transform/runTransformCommand';
 import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
 import {
   log, LogLevel, mapLogLevelStringToNumber, setGlobalLogLevel,
-} from './log';
+} from '../core/log';
 
 export function cli() {
   yargs

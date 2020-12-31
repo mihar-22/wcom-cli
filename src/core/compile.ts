@@ -1,10 +1,15 @@
+import { dim, yellow } from 'kleur';
 import {
   CompilerOptions,
   createProgram,
   createSemanticDiagnosticsBuilderProgram,
   createWatchCompilerHost,
   createWatchProgram,
+  Diagnostic,
   findConfigFile,
+  flattenDiagnosticMessageText,
+  formatDiagnostic,
+  FormatDiagnosticsHost,
   ModuleKind,
   ModuleResolutionKind,
   Program,
@@ -13,8 +18,8 @@ import {
   SourceFile,
   sys,
 } from 'typescript';
-import { isUndefined } from '../../utils/unit';
-import { log, LogLevel } from '../log';
+import { isUndefined } from '../utils/unit';
+import { log, LogLevel } from './log';
 
 /**
  * The most general version of compiler options.
@@ -67,19 +72,38 @@ export function compileOnce(
   return createProgram(filePaths, options);
 }
 
+const formatHost: FormatDiagnosticsHost = {
+  getCanonicalFileName: (path) => path,
+  getCurrentDirectory: sys.getCurrentDirectory,
+  getNewLine: () => sys.newLine,
+};
+
+function reportDiagnostic(diagnostic: Diagnostic) {
+  console.log(diagnostic);
+
+  // flattenDiagnosticMessageText(diagnostic.messageText, formatHost.getNewLine())
+}
+
+function reportWatchStatusChanged(diagnostic: Diagnostic) {
+  log(`[${yellow(diagnostic.code)}] ${diagnostic.messageText}`, LogLevel.Info, false);
+}
+
 export function compileAndWatch(
   root: string,
   configFileName: string,
   options: CompilerOptions = defaultOptions,
   onProgramCreate: (program: Program) => void | Promise<void>,
 ) {
-  options.baseUrl = root;
-
   const host = createWatchCompilerHost(
     configFileName,
-    options,
+    {
+      ...options,
+      baseUrl: root,
+    },
     sys,
     createSemanticDiagnosticsBuilderProgram,
+    reportDiagnostic,
+    reportWatchStatusChanged,
   );
 
   const postProgramCreateRef = host.afterProgramCreate;

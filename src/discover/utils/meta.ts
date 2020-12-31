@@ -4,7 +4,7 @@ import {
   TypeChecker, TypeFlags, TypeFormatFlags, UnionType,
 } from 'typescript';
 import { bold } from 'kleur';
-import { LogLevel, logWithNode } from '../../cli/log';
+import { LogLevel, reportDiagnostic } from '../../core/log';
 import { isUndefined } from '../../utils/unit';
 import {
   DocTag,
@@ -42,7 +42,7 @@ export function buildPropMeta<T>(
   const propOptions = (decoratorParams[0] ?? {}) as T;
 
   if (isMemberPrivate(node)) {
-    logWithNode([
+    reportDiagnostic([
       `Property \`${name}\` cannot be \`private\` or \`protected\`. Use the`,
       `\`@${internalPropDecoratorName}()\` decorator instead.`,
     ].join('\n'), node, LogLevel.Warn);
@@ -177,7 +177,7 @@ export function buildMetaFromTags(
     tags,
     'title',
     (tag) => {
-      logWithNode(
+      reportDiagnostic(
         `Found duplicate \`@${tagName}\` tags with the name \`${tag.title}\`.`,
         tag.node,
         LogLevel.Warn,
@@ -186,7 +186,7 @@ export function buildMetaFromTags(
     true,
   ).map((tag) => {
     if (!tag.description) {
-      logWithNode([
+      reportDiagnostic([
         `Tag \`@${tagName}\` is missing a description.`,
         `\n${bold('EXAMPLE')}\n\n${example}`,
       ].join('\n'), tag.node, LogLevel.Warn);
@@ -212,7 +212,7 @@ export function buildSlotMeta(tags: DocTag[]) {
     slots,
     'title',
     (slot) => {
-      logWithNode(
+      reportDiagnostic(
         `Found duplicate \`@slot\` tags with the name \`${slot.title}\`.`,
         slot.node,
         LogLevel.Warn,
@@ -223,7 +223,7 @@ export function buildSlotMeta(tags: DocTag[]) {
     const isDefault = !slot.description;
 
     if (isDefault && hasSeenDefaultSlot) {
-      logWithNode([
+      reportDiagnostic([
         'Non default `@slot` tag is missing a description.',
         `\n${bold('EXAMPLE')}\n\n@slot body: Used to pass in the body of this component.`,
       ].join('\n'), slot.node, LogLevel.Warn);

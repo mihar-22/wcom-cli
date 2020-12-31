@@ -2,7 +2,7 @@ import normalizePath from 'normalize-path';
 import {
   forEachChild, Program, SourceFile, TypeChecker, ClassDeclaration, isClassDeclaration,
 } from 'typescript';
-import { log, LogLevel } from '../cli/log';
+import { log, LogLevel } from '../core/log';
 import { isUndefined } from '../utils/unit';
 import { ComponentMeta } from './ComponentMeta';
 import { Discoverer, DiscovererId } from './Discoverer';

@@ -1,5 +1,5 @@
 import { TransformCommandConfig } from '../cli/commands/transform/TransformCommandConfig';
-import { log, LogLevel } from '../cli/log';
+import { log, LogLevel } from '../core/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
 import { TransformerId, Transformer } from './Transformer';
 import { AngularTransformer } from './transformers/angular/AngularTransformer';

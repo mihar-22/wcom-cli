@@ -64,10 +64,17 @@ export function setGlobalLogLevel(level: LogLevel) {
   currentLogLevel = level;
 }
 
-export function log(text: unknown | (() => string), level = LogLevel.Info) {
+export type Logger = (
+  text: unknown | (() => string),
+  level?: LogLevel,
+  emptySpace?: boolean
+) => void;
+
+export const log: Logger = (text, level = LogLevel.Info, emptySpace = true) => {
   if ((currentLogLevel === LogLevel.Silent) || (level > currentLogLevel)) return;
 
   if (isFunction(text)) {
+    // eslint-disable-next-line no-param-reassign
     text = text();
   }
 
@@ -77,13 +84,18 @@ export function log(text: unknown | (() => string), level = LogLevel.Info) {
     const currentColor = LogLevelColor[level];
     console.log(
       dim(`[@wcom/cli] ${currentColor(bold(black(` ${mapLogLevelToString(level).toUpperCase()} `)))}`),
-      text,
-      '\n',
+      `${text}${emptySpace ? '\n' : ''}`,
     );
   }
-}
+};
 
-export function logWithNode(message: string, node: Node, level = LogLevel.Info) {
+export type SimpleDiagnosticReporter = (message: string, node: Node, level?: LogLevel) => void;
+
+export const reportDiagnostic: SimpleDiagnosticReporter = (
+  message: string,
+  node: Node,
+  level = LogLevel.Info,
+) => {
   const sourceFile = node.getSourceFile();
   const sourceFilePath = normalizePath(sourceFile.fileName);
   const sourceText = sourceFile.text;
@@ -101,7 +113,7 @@ export function logWithNode(message: string, node: Node, level = LogLevel.Info) 
     `${dim(sourceFilePath)} ${dim('L:')}${dim((isMultiLine ? `${startLineNumber}-${endLineNumber}` : startLineNumber))}\n`,
     prettifyCodeFrame(codeFrame),
   ].join('\n'), level);
-}
+};
 
 interface CodeFrame {
   firstLineNumber: number;

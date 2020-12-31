@@ -1,16 +1,42 @@
 import { Program } from 'typescript';
-import normalizePath from 'normalize-path';
 import { green } from 'kleur';
 import { discover } from '../../../discover';
 import { transform } from '../../../transform';
-import { parseGlobs } from '../../core/globs';
-import { resolveOutputPaths } from '../../core/resolve';
-import { compileAndWatch, compileOnce } from '../../core/compile';
-import { log, LogLevel } from '../../log';
+import { parseGlobs } from '../../../core/globs';
+import { compileAndWatch, compileOnce } from '../../../core/compile';
+import { log, LogLevel } from '../../../core/log';
 import { TransformCommandConfig } from './TransformCommandConfig';
+import { resolveCorePkgName, resolveOutputPaths, resolvePath } from '../../../core/resolve';
+import { isUndefined } from '../../../utils/unit';
+
+async function normalizeConfig(config: TransformCommandConfig) {
+  const rootPath = isUndefined(config.cwd)
+    ? resolvePath(process.cwd())
+    : resolvePath(process.cwd(), config.cwd);
+
+  const configWithResolvedPaths = await resolveOutputPaths(
+    rootPath,
+    config,
+    (key) => key.endsWith('File') || key.endsWith('Dir'),
+  );
+
+  configWithResolvedPaths.cwd = rootPath;
+
+  if (isUndefined(config.corePkgName)) {
+    const corePkgName = await resolveCorePkgName(rootPath) ?? '';
+    configWithResolvedPaths.corePkgName = corePkgName;
+    if (corePkgName === '') {
+      log(() => 'Could not find core package.json', LogLevel.Verbose);
+    } else {
+      log(() => `Found core package with name: ${corePkgName}`, LogLevel.Verbose);
+    }
+  }
+
+  return configWithResolvedPaths;
+}
 
 export async function runTransformCommand(transformConfig: TransformCommandConfig) {
-  const config = await resolveOutputPaths(transformConfig);
+  const config = await normalizeConfig(transformConfig);
   const glob: string[] = config.glob ?? [];
 
   log(config, LogLevel.Verbose);
@@ -20,7 +46,7 @@ export async function runTransformCommand(transformConfig: TransformCommandConfi
       await run(program, glob, config);
     });
   } else {
-    const filePaths = await parseGlobs(glob, config);
+    const filePaths = await parseGlobs(glob);
     const program = compileOnce(filePaths);
     await run(program, glob, config, filePaths);
   }
@@ -33,11 +59,11 @@ export async function run(
   paths?: string[],
 ) {
   const startTime = process.hrtime();
-  const validFilePaths = new Set(paths ?? await parseGlobs(glob, { ...config }));
+  const validFilePaths = new Set(paths ?? await parseGlobs(glob));
 
   const sourceFiles = program
     .getSourceFiles()
-    .filter((sf) => validFilePaths.has(normalizePath(sf.fileName)))
+    .filter((sf) => validFilePaths.has(resolvePath(sf.fileName)))
     .sort((sfA, sfB) => (sfA.fileName > sfB.fileName ? 1 : -1));
 
   const noOfFiles = sourceFiles.length;
