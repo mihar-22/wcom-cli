@@ -1,4 +1,4 @@
-import { dim, yellow } from 'kleur';
+import { yellow } from 'kleur';
 import {
   CompilerOptions,
   createProgram,
@@ -6,10 +6,9 @@ import {
   createWatchCompilerHost,
   createWatchProgram,
   Diagnostic,
+  DiagnosticCategory,
   findConfigFile,
   flattenDiagnosticMessageText,
-  formatDiagnostic,
-  FormatDiagnosticsHost,
   ModuleKind,
   ModuleResolutionKind,
   Program,
@@ -19,7 +18,7 @@ import {
   sys,
 } from 'typescript';
 import { isUndefined } from '../utils/unit';
-import { log, LogLevel } from './log';
+import { log, LogLevel, reportDiagnosticByLine } from './log';
 
 /**
  * The most general version of compiler options.
@@ -65,27 +64,33 @@ export interface CompileResult {
   files: SourceFile[];
 }
 
-export function compileOnce(
-  filePaths: string[],
-  options: CompilerOptions = defaultOptions,
-) {
+export function compileOnce(filePaths: string[], options: CompilerOptions = defaultOptions) {
   return createProgram(filePaths, options);
 }
 
-const formatHost: FormatDiagnosticsHost = {
-  getCanonicalFileName: (path) => path,
-  getCurrentDirectory: sys.getCurrentDirectory,
-  getNewLine: () => sys.newLine,
+const tsDiagnosticCategoryToLogLevel: Record<DiagnosticCategory, LogLevel> = {
+  [DiagnosticCategory.Warning]: LogLevel.Warn,
+  [DiagnosticCategory.Error]: LogLevel.Error,
+  [DiagnosticCategory.Message]: LogLevel.Info,
+  [DiagnosticCategory.Suggestion]: LogLevel.Info,
 };
 
 function reportDiagnostic(diagnostic: Diagnostic) {
-  console.log(diagnostic);
-
-  // flattenDiagnosticMessageText(diagnostic.messageText, formatHost.getNewLine())
+  const sourceFile = diagnostic.file;
+  const message = flattenDiagnosticMessageText(diagnostic.messageText, sys.newLine);
+  const logLevel = tsDiagnosticCategoryToLogLevel[diagnostic.category];
+  const pos = diagnostic.start
+    ? sourceFile?.getLineAndCharacterOfPosition(diagnostic.start)
+    : undefined;
+  if (isUndefined(sourceFile) || isUndefined(pos)) {
+    log(message, logLevel);
+  } else {
+    reportDiagnosticByLine(message, sourceFile, pos.line + 1, logLevel);
+  }
 }
 
 function reportWatchStatusChanged(diagnostic: Diagnostic) {
-  log(`[${yellow(diagnostic.code)}] ${diagnostic.messageText}`, LogLevel.Info, false);
+  log(`[${yellow(diagnostic.code)}] ${diagnostic.messageText}`, LogLevel.Info);
 }
 
 export function compileAndWatch(

@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import { dim } from 'kleur';
 import { SymbolFlags, TypeChecker } from 'typescript';
-import { log, LogLevel, reportDiagnostic } from '../core/log';
+import { log, LogLevel, reportDiagnosticByNode } from '../core/log';
 import { arrayOnlyUnique } from '../utils/array';
 import { isUndefined } from '../utils/unit';
 import { ComponentMeta } from './ComponentMeta';
@@ -14,7 +14,7 @@ export function validateComponent(
 ) {
   const tagError = validateComponentTag(component.tagName);
   if (!isUndefined(tagError)) {
-    reportDiagnostic(
+    reportDiagnosticByNode(
       tagError,
       component.declaration.decorators!.find(isDecoratorNamed(customElementDecoratorName))!,
       LogLevel.Error,
@@ -28,7 +28,7 @@ export function validateComponent(
 
   nonTypeExports.forEach((symb) => {
     const errorNode = symb.valueDeclaration ? symb.valueDeclaration : symb.declarations[0];
-    reportDiagnostic([
+    reportDiagnosticByNode([
       `To allow efficient bundling, modules using \`@${customElementDecoratorName}()\` can only`,
       'have a single export which is the component class itself.',
     ].join('\n'), errorNode, LogLevel.Error);

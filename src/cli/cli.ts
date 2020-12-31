@@ -93,6 +93,7 @@ export function cli() {
     .option('markdownOutDir', {
       describe: 'The path to the directory where the Markdown files should be output relative to `cwd`',
       string: true,
+      default: '../docs/components',
     })
     .option('reactOutDir', {
       describe: 'The path to the directory where the React components should be output relative to `cwd`',

@@ -3,7 +3,7 @@ import {
   bgWhite, bgYellow, bold,
   dim, black, white,
 } from 'kleur';
-import { Node } from 'typescript';
+import { Node, SourceFile } from 'typescript';
 import normalizePath from 'normalize-path';
 import { isFunction, isObject } from '../utils/unit';
 import { splitLineBreaks } from '../utils/string';
@@ -64,13 +64,9 @@ export function setGlobalLogLevel(level: LogLevel) {
   currentLogLevel = level;
 }
 
-export type Logger = (
-  text: unknown | (() => string),
-  level?: LogLevel,
-  emptySpace?: boolean
-) => void;
+export type Logger = (text: unknown | (() => string), level?: LogLevel,) => void;
 
-export const log: Logger = (text, level = LogLevel.Info, emptySpace = true) => {
+export const log: Logger = (text, level = LogLevel.Info) => {
   if ((currentLogLevel === LogLevel.Silent) || (level > currentLogLevel)) return;
 
   if (isFunction(text)) {
@@ -84,14 +80,52 @@ export const log: Logger = (text, level = LogLevel.Info, emptySpace = true) => {
     const currentColor = LogLevelColor[level];
     console.log(
       dim(`[@wcom/cli] ${currentColor(bold(black(` ${mapLogLevelToString(level).toUpperCase()} `)))}`),
-      `${text}${emptySpace ? '\n' : ''}`,
+      `${text}\n`,
     );
   }
 };
 
-export type SimpleDiagnosticReporter = (message: string, node: Node, level?: LogLevel) => void;
+const printDiagnostic = (
+  message: string,
+  sourceFilePath: string,
+  sourceText: string,
+  startLineNumber: number,
+  endLineNumber: number,
+  level: LogLevel,
+) => {
+  const isMultiLine = (endLineNumber - startLineNumber) > 0;
+  const codeFrame = buildCodeFrame(sourceText, startLineNumber, endLineNumber);
 
-export const reportDiagnostic: SimpleDiagnosticReporter = (
+  log([
+    `\n\n${bold('MESSAGE')}`,
+    `\n${message}`,
+    `\n${bold('CODE')}\n`,
+    `${dim(sourceFilePath)} ${dim('L:')}${dim((isMultiLine ? `${startLineNumber}-${endLineNumber}` : startLineNumber))}\n`,
+    prettifyCodeFrame(codeFrame),
+  ].join('\n'), level);
+};
+
+export type DiagnosticReporterByLine = (
+  message: string,
+  file: SourceFile,
+  line: number,
+  level?: LogLevel
+) => void;
+
+export const reportDiagnosticByLine: DiagnosticReporterByLine = (
+  message: string,
+  sourceFile: SourceFile,
+  line: number,
+  level = LogLevel.Info,
+) => {
+  const sourceFilePath = normalizePath(sourceFile.fileName);
+  const sourceText = sourceFile.text;
+  printDiagnostic(message, sourceFilePath, sourceText, line, line, level);
+};
+
+export type DiagnosticReporterByNode = (message: string, node: Node, level?: LogLevel) => void;
+
+export const reportDiagnosticByNode: DiagnosticReporterByNode = (
   message: string,
   node: Node,
   level = LogLevel.Info,
@@ -103,16 +137,7 @@ export const reportDiagnostic: SimpleDiagnosticReporter = (
   const posEnd = sourceFile.getLineAndCharacterOfPosition(node.getEnd());
   const startLineNumber = posStart.line + 1;
   const endLineNumber = posEnd.line + 1;
-  const isMultiLine = (endLineNumber - startLineNumber) > 0;
-  const codeFrame = buildCodeFrame(sourceText, startLineNumber, endLineNumber);
-
-  log([
-    `\n\n${bold('MESSAGE')}`,
-    `\n${message}`,
-    `\n${bold('CODE')}\n`,
-    `${dim(sourceFilePath)} ${dim('L:')}${dim((isMultiLine ? `${startLineNumber}-${endLineNumber}` : startLineNumber))}\n`,
-    prettifyCodeFrame(codeFrame),
-  ].join('\n'), level);
+  printDiagnostic(message, sourceFilePath, sourceText, startLineNumber, endLineNumber, level);
 };
 
 interface CodeFrame {

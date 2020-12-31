@@ -1,5 +1,5 @@
 import { ClassElement } from 'typescript';
-import { LogLevel, reportDiagnostic } from '../core/log';
+import { LogLevel, reportDiagnosticByNode } from '../core/log';
 
 export const validatePublicName = (
   propName: string,
@@ -7,7 +7,7 @@ export const validatePublicName = (
   element: ClassElement,
 ) => {
   if (RESERVED_PUBLIC_MEMBERS.has(propName.toLowerCase())) {
-    reportDiagnostic([
+    reportDiagnosticByNode([
       `The ${memberType} \`${propName}\` is a reserved public name.\n`,
       'Reusing names that are already defined on the element\'s prototype may cause',
       'unexpected runtime errors or user-interface issues on various browsers, so',
