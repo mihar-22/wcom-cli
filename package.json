@@ -2,7 +2,7 @@
   "name": "@wcom/cli",
   "version": "0.0.0",
   "license": "MIT",
-  "author": "Rahim Alwer <rahim_alwer@hotmail.com>",
+  "author": "Rahim Alwer <rahim_alwer@outlook.com>",
   "description": "CLI tool to transform and distribute your web component library.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
