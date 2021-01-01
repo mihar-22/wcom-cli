@@ -9,7 +9,6 @@ import { ReactTransformer } from './transformers/react/ReactTransformer';
 import { SvelteTransformer } from './transformers/svelte/SvelteTransformer';
 import { TypesTransformer } from './transformers/types/TypesTransformer';
 import { VsCodeTransformer } from './transformers/vscode/VsCodeTransformer';
-import { VueNextTransformer } from './transformers/vue-next/VueNextTransformer';
 import { VueTransformer } from './transformers/vue/VueTransformer';
 
 export type TransformerMapper = {
@@ -25,7 +24,6 @@ export const TransformerMap: TransformerMapper = Object.freeze({
   [TransformerId.Types]: TypesTransformer,
   [TransformerId.VsCode]: VsCodeTransformer,
   [TransformerId.Vue]: VueTransformer,
-  [TransformerId.VueNext]: VueNextTransformer,
   [TransformerId.ALL]: undefined,
 });
 

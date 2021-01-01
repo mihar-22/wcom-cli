@@ -38,11 +38,11 @@ export function cli() {
     })
     .option('transformers', {
       describe: 'Specify transformers to use',
-      choices: ['json', 'vscode', 'types', 'markdown', 'react', 'vue', 'vue-next', 'svelte', 'angular', 'all'],
+      choices: ['json', 'vscode', 'types', 'markdown', 'react', 'vue', 'svelte', 'angular', 'all'],
       array: true,
       alias: 't',
       requiresArg: true,
-      default: ['vscode', 'types'],
+      default: ['types'],
     })
     .option('tsconfig', {
       describe: 'The name of the TS config file that\'ll be used for watch mode',
@@ -101,13 +101,8 @@ export function cli() {
       string: true,
     })
     .option('vueOutDir', {
-      describe: 'The path to the directory where the Vue 2 components should be output relative to `cwd`',
+      describe: 'The path to the directory where the Vue components should be output relative to `cwd`',
       default: '../integrations/vue/src/components',
-      string: true,
-    })
-    .option('vueNextOutDir', {
-      describe: 'The path to the directory where the Vue 3 components should be output relative to `cwd`',
-      default: '../integrations/vue-next/src/components',
       string: true,
     })
     .option('svelteOutputDir', {

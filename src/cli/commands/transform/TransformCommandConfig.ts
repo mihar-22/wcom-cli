@@ -7,7 +7,6 @@ import { ReactTransformerConfig } from '../../../transform/transformers/react/Re
 import { SvelteTransformerConfig } from '../../../transform/transformers/svelte/SvelteTransformerConfig';
 import { TypesTransformerConfig } from '../../../transform/transformers/types/TypesTransformerConfig';
 import { VsCodeTransformerConfig } from '../../../transform/transformers/vscode/VsCodeTransformerConfig';
-import { VueNextTransformerConfig } from '../../../transform/transformers/vue-next/VueNextTransformerConfig';
 import { VueTransformerConfig } from '../../../transform/transformers/vue/VueTransformerConfig';
 
 export interface TransformCommandConfig extends
@@ -18,8 +17,7 @@ export interface TransformCommandConfig extends
   SvelteTransformerConfig,
   TypesTransformerConfig,
   VsCodeTransformerConfig,
-  VueTransformerConfig,
-  VueNextTransformerConfig {
+  VueTransformerConfig {
   discovery: DiscovererId;
   transformers: TransformerId[];
   logLevel: string;
