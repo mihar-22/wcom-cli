@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "author": "Rahim Alwer <rahim_alwer@hotmail.com>",
-  "description": "CLI tool to get your web component library ready for production.",
+  "description": "CLI tool to transform and distribute your web component library.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "@types/",
-  "homepage": "https://github.com/mihar-22/wc-cli",
+  "homepage": "https://github.com/wcom-js/cli",
   "bugs": {
-    "url": "https://github.com/mihar-22/wc-cli"
+    "url": "https://github.com/wcom-js/cli/issues"
   },
   "bin": {
     "wcom": "cli.js"
@@ -25,9 +25,7 @@
     "build:esm": "tsc --module es2015 --outDir dist/esm",
     "build:watch": "npm run build:cjs -- --watch",
     "lint": "eslint ./src --quiet --fix --ignore-path .gitignore",
-    "release": "npx semantic-release --branches main",
-    "test": "",
-    "test:watch": ""
+    "release": "npx semantic-release --branches main"
   },
   "peerDependencies": {
     "typescript": "^4.0.0"
@@ -56,7 +54,6 @@
     "wcom",
     "web-components",
     "cli",
-    "production ready",
     "analyzer",
     "transformer",
     "documentation",
