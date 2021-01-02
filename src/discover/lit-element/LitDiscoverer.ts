@@ -1,6 +1,6 @@
 import {
-  CallExpression, ClassDeclaration, isImportDeclaration, isMethodDeclaration,
-  isPropertyDeclaration, TypeChecker,
+  CallExpression, ClassDeclaration, GetAccessorDeclaration, Identifier, isGetAccessor,
+  isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, PropertyDeclaration, TypeChecker,
 } from 'typescript';
 import { resolve, dirname } from 'path';
 import { log, LogLevel } from '../../core/log';
@@ -10,7 +10,7 @@ import { Discoverer } from '../Discoverer';
 import { isDecoratedClassMember, isDecoratorNamed } from '../utils/decorators';
 import { getDocTags, isMemberPrivate } from '../utils/transform';
 import {
-  buildEventMeta, buildMetaFromTags, buildMethodMeta, buildPropMeta, buildSlotMeta,
+  buildEventMeta, buildMetaFromTags, buildMethodMeta, buildPropMeta, buildSlotMeta, getMemberName,
 } from '../utils/meta';
 
 export interface LitPropOptions {
@@ -23,6 +23,18 @@ export interface LitEventOptions {
   bubbles?: boolean;
   composed?: boolean;
 }
+
+export const LIT_LIFECYCLE_METHODS = new Set([
+  'connectedCallback',
+  'disconnectedCallback',
+  'performUpdate',
+  'shouldUpdate',
+  'update',
+  'render',
+  'firstUpdated',
+  'updated',
+  'updateComplete',
+]);
 
 export const LitDiscoverer: Discoverer = {
   CUSTOM_ELEMENT_DECORATOR_NAME: 'customElement',
@@ -43,12 +55,14 @@ export const LitDiscoverer: Discoverer = {
 
   findProps(checker: TypeChecker, cls: ClassDeclaration) {
     return cls.members
-      .filter(isPropertyDeclaration)
-      .filter(isDecoratedClassMember)
-      .filter((node) => node.decorators!.find(isDecoratorNamed('property')))
+      .filter((node) => (
+        isPropertyDeclaration(node)
+        && isDecoratedClassMember(node)
+        && node.decorators!.find(isDecoratorNamed('property')))
+        || (isGetAccessor(node) && !isMemberPrivate(node)))
       .map((node) => buildPropMeta<LitPropOptions>(
         checker,
-        node,
+        (node as PropertyDeclaration | GetAccessorDeclaration),
         'property',
         'internalProperty',
         (opts) => (opts ?? {}),
@@ -59,6 +73,7 @@ export const LitDiscoverer: Discoverer = {
     return cls.members
       .filter(isMethodDeclaration)
       .filter((node) => !isMemberPrivate(node))
+      .filter((node) => !LIT_LIFECYCLE_METHODS.has(getMemberName(checker, node)!))
       .map((node) => buildMethodMeta(checker, node));
   },
 
@@ -106,7 +121,6 @@ export const LitDiscoverer: Discoverer = {
     const trimFileExt = (input: string) => input.replace(/\.[^/.]+$/, '');
 
     components.forEach((component) => {
-      component.dependencies = [];
       const path = trimFileExt(component.sourceFile.fileName);
       map.set(path, component);
       paths.add(path);

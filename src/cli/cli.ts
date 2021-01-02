@@ -2,16 +2,14 @@ import yargs from 'yargs';
 import { isCLIError } from './cli-error';
 import { runTransformCommand } from './commands/transform/runTransformCommand';
 import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
-import {
-  log, LogLevel, mapLogLevelStringToNumber, setGlobalLogLevel,
-} from '../core/log';
+import { logStackTrace, mapLogLevelStringToNumber, setGlobalLogLevel } from '../core/log';
 
 export function cli() {
   yargs
     .usage('Usage: $0 <command> [glob..] [options]')
     .command<TransformCommandConfig>({
     command: ['transform [glob..]', '$0'],
-    describe: 'Transforms components into specified formats',
+    describe: 'Discovers and transforms components into specified formats',
     handler: async (config) => {
       setGlobalLogLevel(mapLogLevelStringToNumber(config.logLevel));
 
@@ -19,7 +17,7 @@ export function cli() {
         await runTransformCommand(config);
       } catch (e) {
         if (isCLIError(e)) {
-          log(e.message, LogLevel.Error);
+          logStackTrace(e.message, e.stack);
         } else {
           throw e;
         }
@@ -27,8 +25,8 @@ export function cli() {
     },
   })
     .example('$ $0 transform --transformers vscode', '')
-    .example('$ $0 transform src --transformers json vscode --watch', '')
-    .example('$ $0 transform src/**/*.ts --transformers json --jsonOutFile ./components.json', '')
+    .example('$ $0 transform src -t json vscode -w', '')
+    .example('$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json', '')
     .option('discovery', {
       describe: 'Specify discoverer to use that will be responsible for finding components and extracting their metadata',
       nArgs: 1,
@@ -38,15 +36,16 @@ export function cli() {
     })
     .option('transformers', {
       describe: 'Specify transformers to use',
-      choices: ['json', 'vscode', 'types', 'markdown', 'react', 'vue', 'svelte', 'angular', 'all'],
+      choices: ['json', 'vscode', 'types', 'exports', 'markdown', 'react', 'vue', 'svelte', 'angular', 'all'],
       array: true,
       alias: 't',
       requiresArg: true,
       default: ['types'],
     })
-    .option('tsconfig', {
+    .option('project', {
       describe: 'The name of the TS config file that\'ll be used for watch mode',
       string: true,
+      alias: 'p',
       default: 'tsconfig.json',
     })
     .option('corePkgName', {
@@ -90,29 +89,34 @@ export function cli() {
       default: './src/components.d.ts',
       string: true,
     })
+    .option('exportsOutFile', {
+      describe: 'The path to where the TypeScript index file that exports all components should be output relative to `cwd`',
+      default: './src/components/index.ts',
+      string: true,
+    })
     .option('markdownOutDir', {
       describe: 'The path to the directory where the Markdown files should be output relative to `cwd`',
       string: true,
-      default: '../docs/components',
+      default: './docs/components',
     })
     .option('reactOutDir', {
       describe: 'The path to the directory where the React components should be output relative to `cwd`',
-      default: '../integrations/react/src/components',
+      default: './integrations/react/src/components',
       string: true,
     })
     .option('vueOutDir', {
       describe: 'The path to the directory where the Vue components should be output relative to `cwd`',
-      default: '../integrations/vue/src/components',
+      default: './integrations/vue/src/components',
       string: true,
     })
-    .option('svelteOutputDir', {
+    .option('svelteOutDir', {
       describe: 'The path to the directory where the Svelte components should be output relative to `cwd`',
-      default: '../integrations/svelte/src/components',
+      default: './integrations/svelte/src/components',
       string: true,
     })
-    .option('angularOutputDir', {
+    .option('angularOutDir', {
       describe: 'The path to the directory where the Angular components should be output relative to `cwd`',
-      default: '../integrations/angular/components',
+      default: './integrations/angular/components',
       string: true,
     })
     .alias('v', 'version')

@@ -1,13 +1,14 @@
 export const pascalToDashCase = (
-  input: string,
-) => input.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+  text: string,
+) => text.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
 
-export const escapeQuotes = (input: string) => input
+export const escapeQuotes = (text: string) => text
   .replace(/^"+|"+$/g, '')
   .replace(/^'+|'+$/g, '');
 
-export const splitLineBreaks = (sourceText: string) => {
-  if (typeof sourceText !== 'string') return [];
-  sourceText = sourceText.replace(/\\r/g, '\n');
-  return sourceText.split('\n');
+export const normalizeLineBreaks = (text: string) => text.replace(/\\r/g, '\n');
+
+export const splitLineBreaks = (text: string) => {
+  if (typeof text !== 'string') return [];
+  return normalizeLineBreaks(text).split('\n');
 };

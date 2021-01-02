@@ -64,7 +64,7 @@ export function setGlobalLogLevel(level: LogLevel) {
   currentLogLevel = level;
 }
 
-export type Logger = (text: unknown | (() => string), level?: LogLevel,) => void;
+export type Logger = (text: unknown | (() => string), level?: LogLevel) => void;
 
 export const log: Logger = (text, level = LogLevel.Info) => {
   if ((currentLogLevel === LogLevel.Silent) || (level > currentLogLevel)) return;
@@ -83,6 +83,18 @@ export const log: Logger = (text, level = LogLevel.Info) => {
       `${text}\n`,
     );
   }
+};
+
+export type StackTraceLogger = (message: string, stack: string, level?: LogLevel) => void;
+export const logStackTrace: StackTraceLogger = (
+  message: string,
+  stack: string,
+  level = LogLevel.Error,
+) => {
+  log(
+    `\n\n${bold('MESSAGE')}\n\n${message}\n\n${bold('STACK TRACE')}\n\n${stack}`,
+    level,
+  );
 };
 
 const printDiagnostic = (

@@ -1,6 +1,6 @@
 import {
   SourceFile, Symbol, PropertyDeclaration, MethodDeclaration, ClassDeclaration,
-  Type, Decorator, Node, Signature,
+  Type, Decorator, Node, Signature, GetAccessorDeclaration,
 } from 'typescript';
 
 export type TypeText = 'any' | 'string' | 'number' | 'boolean' | 'unknown';
@@ -23,7 +23,7 @@ export interface PropTypeInfo {
 export interface PropMeta {
   symbol: Symbol;
   type: Type;
-  declaration: PropertyDeclaration;
+  declaration: PropertyDeclaration | GetAccessorDeclaration;
   decorator: Decorator;
   typeText: TypeText;
   typeInfo: PropTypeInfo;
@@ -38,6 +38,8 @@ export interface PropMeta {
   deprecated: boolean;
   defaultValue: string;
   documentation?: string;
+  isAccessor: boolean;
+  hasSetter?: boolean;
 }
 
 export interface MethodTypeInfo {
@@ -64,7 +66,6 @@ export interface EventMeta {
   declaration: PropertyDeclaration;
   decorator: Decorator;
   type: Type;
-  typeText: string;
   typeInfo: PropTypeInfo;
   name: string;
   bubbles: boolean;

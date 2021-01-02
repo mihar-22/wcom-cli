@@ -1,6 +1,7 @@
 import { DiscovererId } from '../../../discover/Discoverer';
 import { TransformerId } from '../../../transform/Transformer';
 import { AngularTransformerConfig } from '../../../transform/transformers/angular/AngularTransformerConfig';
+import { ExportsTransformerConfig } from '../../../transform/transformers/exports/ExportsTransformerConfig';
 import { JsonTransformerConfig } from '../../../transform/transformers/json/JsonTransformerConfig';
 import { MarkdownTransformerConfig } from '../../../transform/transformers/markdown/MarkdownTransformerConfig';
 import { ReactTransformerConfig } from '../../../transform/transformers/react/ReactTransformerConfig';
@@ -17,7 +18,8 @@ export interface TransformCommandConfig extends
   SvelteTransformerConfig,
   TypesTransformerConfig,
   VsCodeTransformerConfig,
-  VueTransformerConfig {
+  VueTransformerConfig,
+  ExportsTransformerConfig {
   discovery: DiscovererId;
   transformers: TransformerId[];
   logLevel: string;
@@ -26,5 +28,5 @@ export interface TransformCommandConfig extends
   glob?: string[];
   globs?: string[];
   cwd: string;
-  tsconfig: string;
+  project: string;
 }

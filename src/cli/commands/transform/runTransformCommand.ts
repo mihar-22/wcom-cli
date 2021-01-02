@@ -42,7 +42,7 @@ export async function runTransformCommand(transformConfig: TransformCommandConfi
   log(config, LogLevel.Verbose);
 
   if (config.watch) {
-    compileAndWatch(config.cwd, config.tsconfig, undefined, async (program) => {
+    compileAndWatch(config.cwd, config.project, undefined, async (program) => {
       await run(program, glob, config);
     });
   } else {
@@ -68,7 +68,7 @@ export async function run(
 
   const noOfFiles = sourceFiles.length;
   const noOfFilesText = green(`${noOfFiles} ${(noOfFiles === 1) ? 'file' : 'files'}`);
-  log(() => `Starting to transform ${(noOfFilesText)}`, LogLevel.Info);
+  log(() => `Starting to transform ${(noOfFilesText)}...`, LogLevel.Info);
 
   const components = discover(program, sourceFiles, config.discovery);
 
@@ -77,5 +77,5 @@ export async function run(
 
   const totalTime = process.hrtime(startTime);
   const totalTimeText = green(`${((totalTime[0] * 1000) + (totalTime[1] / 1000000)).toFixed(2)}ms`);
-  log(() => `Finished transforming ${noOfFilesText} in ${totalTimeText}`, LogLevel.Info);
+  log(() => `Finished transforming ${noOfFilesText} in ${totalTimeText}.`, LogLevel.Info);
 }

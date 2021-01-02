@@ -4,6 +4,7 @@ export enum TransformerId {
   Json = 'json',
   VsCode = 'vscode',
   Types = 'types',
+  Exports = 'exports',
   Markdown = 'markdown',
   React = 'react',
   Vue = 'vue',

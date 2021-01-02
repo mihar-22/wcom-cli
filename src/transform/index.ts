@@ -3,6 +3,7 @@ import { log, LogLevel } from '../core/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
 import { TransformerId, Transformer } from './Transformer';
 import { AngularTransformer } from './transformers/angular/AngularTransformer';
+import { ExportsTransformer } from './transformers/exports/ExportsTransformer';
 import { JsonTransformer } from './transformers/json/JsonTransformer';
 import { MarkdownTransformer } from './transformers/markdown/MarkdownTransformer';
 import { ReactTransformer } from './transformers/react/ReactTransformer';
@@ -18,10 +19,11 @@ export type TransformerMapper = {
 export const TransformerMap: TransformerMapper = Object.freeze({
   [TransformerId.Angular]: AngularTransformer,
   [TransformerId.Json]: JsonTransformer,
+  [TransformerId.Types]: TypesTransformer,
+  [TransformerId.Exports]: ExportsTransformer,
   [TransformerId.Markdown]: MarkdownTransformer,
   [TransformerId.React]: ReactTransformer,
   [TransformerId.Svelte]: SvelteTransformer,
-  [TransformerId.Types]: TypesTransformer,
   [TransformerId.VsCode]: VsCodeTransformer,
   [TransformerId.Vue]: VueTransformer,
   [TransformerId.ALL]: undefined,

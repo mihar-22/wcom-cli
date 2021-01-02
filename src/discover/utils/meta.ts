@@ -1,21 +1,19 @@
 /* eslint-disable no-bitwise */
 import {
   Identifier, MethodDeclaration, NodeBuilderFlags, PropertyDeclaration, SignatureKind, Type,
-  TypeChecker, TypeFlags, TypeFormatFlags, UnionType,
+  TypeChecker, TypeFlags, TypeFormatFlags, UnionType, ClassElement, TypeNode, isTypeReferenceNode,
+  isIdentifier, GetAccessorDeclaration, isPropertyDeclaration,
 } from 'typescript';
 import { bold } from 'kleur';
 import { LogLevel, reportDiagnosticByNode } from '../../core/log';
 import { isUndefined } from '../../utils/unit';
 import {
-  DocTag,
-  EventMeta,
-  MethodMeta, MethodTypeInfo, PropMeta, PropTypeInfo, TypeText,
+  DocTag, EventMeta, MethodMeta, MethodTypeInfo, PropMeta, PropTypeInfo, TypeText,
 } from '../ComponentMeta';
 import { getDeclarationParameters, isDecoratorNamed } from './decorators';
 import {
-  getDocTags,
-  getDocumentation,
-  getTypeReferences, hasDocTag, isMemberPrivate, resolveType, splitJsDocTagText, typeToString,
+  getDocTags, getDocumentation, getTypeReferences, hasDocTag, isMemberPrivate, resolveType,
+  splitJsDocTagText, typeToString,
 } from './transform';
 import { validatePublicName } from '../validatePublicName';
 import { arrayOnlyUnique } from '../../utils/array';
@@ -25,9 +23,15 @@ export interface DefaultPropOptions {
   reflect?: boolean;
 }
 
+export const getMemberName = (checker: TypeChecker, node: ClassElement) => {
+  const identifier = node.name as Identifier;
+  const symbol = checker.getSymbolAtLocation(identifier);
+  return symbol?.escapedName as string | undefined;
+};
+
 export function buildPropMeta<T>(
   checker: TypeChecker,
-  node: PropertyDeclaration,
+  node: PropertyDeclaration | GetAccessorDeclaration,
   propDecoratorName: string,
   internalPropDecoratorName: string,
   transformPropOptions: (propOptions: T) => DefaultPropOptions,
@@ -37,11 +41,13 @@ export function buildPropMeta<T>(
   const symbol = checker.getSymbolAtLocation(identifier)!;
   const type = checker.getTypeAtLocation(node);
   const name = symbol.escapedName as string;
-  const decorator = node.decorators!.find(isDecoratorNamed(propDecoratorName))!;
-  const decoratorParams = getDeclarationParameters<T>(decorator);
-  const propOptions = (decoratorParams[0] ?? {}) as T;
+  const isProperty = isPropertyDeclaration(node);
+  const decorator = node.decorators?.find(isDecoratorNamed(propDecoratorName));
+  const decoratorParams = decorator ? getDeclarationParameters<T>(decorator) : undefined;
+  const propOptions = (decoratorParams?.[0] ?? {}) as T;
+  const hasSetter = !isProperty ? (symbol.declarations.length > 1) : undefined;
 
-  if (isMemberPrivate(node)) {
+  if (isProperty && isMemberPrivate(node)) {
     reportDiagnosticByNode([
       `Property \`${name}\` cannot be \`private\` or \`protected\`. Use the`,
       `\`@${internalPropDecoratorName}()\` decorator instead.`,
@@ -53,23 +59,25 @@ export function buildPropMeta<T>(
   const typeText = typeTextFromTSType(type);
 
   // Prop can have an attribute if type is NOT "unknown".
-  if (typeText !== 'unknown') {
+  if ((typeText !== 'unknown') || (!isProperty && hasSetter)) {
     const { attribute, reflect } = transformPropOptions(propOptions);
     meta.attribute = attribute?.trim().toLowerCase();
     meta.reflect = reflect ?? false;
   }
 
+  meta.name = name;
   meta.declaration = node;
   meta.symbol = symbol;
   meta.decorator = decorator;
   meta.type = type;
   meta.typeText = typeText;
+  meta.isAccessor = !isProperty;
+  meta.hasSetter = hasSetter;
   meta.typeInfo = getPropTypeInfo(checker, node, type);
   meta.documentation = getDocumentation(checker, identifier);
-  meta.name = name;
-  meta.defaultValue = node.initializer?.getText();
+  meta.defaultValue = isPropertyDeclaration(node) ? node.initializer?.getText() : undefined;
   meta.docTags = getDocTags(node);
-  meta.readonly = hasDocTag(meta.docTags, 'readonly');
+  meta.readonly = (!isProperty && !hasSetter) && hasDocTag(meta.docTags, 'readonly');
   meta.internal = hasDocTag(meta.docTags, 'internal');
   meta.deprecated = hasDocTag(meta.docTags, 'deprecated');
   meta.required = !isUndefined(node.exclamationToken) || hasDocTag(meta.docTags, 'required');
@@ -141,22 +149,15 @@ export function buildEventMeta<T>(
   const decorator = node.decorators!.find(isDecoratorNamed(eventDecoratorName))!;
   const decoratorParams = getDeclarationParameters<T>(decorator);
   const eventOptions = (decoratorParams[0] ?? {}) as T;
-  const typeText = typeTextFromTSType(type);
-
-  // Event can have an attribute if type is NOT "unknown".
-  if (typeText !== 'unknown') {
-    const { name: eventName, composed, bubbles } = transformEventOptions(eventOptions);
-    meta.name = eventName ?? name;
-    meta.composed = composed ?? false;
-    meta.bubbles = bubbles ?? false;
-  }
-
+  const { name: eventName, composed, bubbles } = transformEventOptions(eventOptions);
+  meta.name = eventName?.trim() ?? name;
+  meta.composed = composed ?? true;
+  meta.bubbles = bubbles ?? true;
   meta.symbol = symbol;
   meta.declaration = node;
   meta.decorator = decorator;
   meta.type = type;
-  meta.typeInfo = getPropTypeInfo(checker, node, type);
-  meta.typeText = typeText;
+  meta.typeInfo = getEventTypeInfo(checker, node);
   meta.docTags = getDocTags(node);
   meta.internal = hasDocTag(meta.docTags, 'internal');
   meta.deprecated = hasDocTag(meta.docTags, 'deprecated');
@@ -245,7 +246,7 @@ export function buildSlotMeta(tags: DocTag[]) {
 
 export const getPropTypeInfo = (
   typeChecker: TypeChecker,
-  node: PropertyDeclaration,
+  node: PropertyDeclaration | GetAccessorDeclaration,
   type: Type,
 ): PropTypeInfo => {
   const nodeType = node.type;
@@ -255,6 +256,29 @@ export const getPropTypeInfo = (
     resolved: resolveType(typeChecker, type),
     references: getTypeReferences(node),
   };
+};
+
+export const getEventTypeInfo = (typeChecker: TypeChecker, node: PropertyDeclaration) => {
+  const sourceFile = node.getSourceFile();
+  const eventType = node.type ? getEventType(node.type) : undefined;
+  return {
+    original: eventType ? eventType.getText() : 'any',
+    resolved: eventType ? resolveType(typeChecker, typeChecker.getTypeFromTypeNode(eventType)) : 'any',
+    references: eventType ? getTypeReferences(eventType, sourceFile) : {},
+  };
+};
+
+export const getEventType = (type: TypeNode): TypeNode | undefined => {
+  if (isTypeReferenceNode(type)
+    && isIdentifier(type.typeName)
+    && type.typeName.text === 'EventEmitter'
+    && type.typeArguments
+    && (type.typeArguments.length > 0)
+  ) {
+    return type.typeArguments[0];
+  }
+
+  return undefined;
 };
 
 export const typeTextFromTSType = (type: Type): TypeText => {

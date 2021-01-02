@@ -10,6 +10,7 @@ import {
   isImportClause, isNamedImports, isImportDeclaration, Node, EntityName, displayPartsToString,
   SourceFile,
 } from 'typescript';
+import { normalizeLineBreaks } from '../../utils/string';
 import { DocTag, TypeReference, TypeReferences } from '../ComponentMeta';
 
 export const splitJsDocTagText = (tag: DocTag) => {
@@ -29,7 +30,7 @@ export const hasDocTag = (tags: DocTag[], name: string) => tags
 
 export const getDocumentation = (checker: TypeChecker, id: Identifier) => {
   const comment = checker.getSymbolAtLocation(id)?.getDocumentationComment(checker);
-  return displayPartsToString(comment);
+  return normalizeLineBreaks(displayPartsToString(comment) ?? '').replace(/\n/g, ' ');
 };
 
 export const resolveType = (checker: TypeChecker, type: Type) => {
