@@ -6,10 +6,6 @@ export enum TransformerId {
   Types = 'types',
   Exports = 'exports',
   Markdown = 'markdown',
-  React = 'react',
-  Vue = 'vue',
-  Svelte = 'svelte',
-  Angular = 'angular',
   ALL = 'all',
 }
 

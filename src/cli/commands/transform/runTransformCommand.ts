@@ -6,7 +6,7 @@ import { parseGlobs } from '../../../core/globs';
 import { compileAndWatch, compileOnce } from '../../../core/compile';
 import { log, LogLevel } from '../../../core/log';
 import { TransformCommandConfig } from './TransformCommandConfig';
-import { resolveCorePkgName, resolveOutputPaths, resolvePath } from '../../../core/resolve';
+import { resolveOutputPaths, resolvePath } from '../../../core/resolve';
 import { isUndefined } from '../../../utils/unit';
 
 async function normalizeConfig(config: TransformCommandConfig) {
@@ -21,17 +21,6 @@ async function normalizeConfig(config: TransformCommandConfig) {
   );
 
   configWithResolvedPaths.cwd = rootPath;
-
-  if (isUndefined(config.corePkgName)) {
-    const corePkgName = await resolveCorePkgName(rootPath) ?? '';
-    configWithResolvedPaths.corePkgName = corePkgName;
-    if (corePkgName === '') {
-      log(() => 'Could not find core package.json', LogLevel.Verbose);
-    } else {
-      log(() => `Found core package with name: ${corePkgName}`, LogLevel.Verbose);
-    }
-  }
-
   return configWithResolvedPaths;
 }
 

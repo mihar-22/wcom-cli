@@ -2,30 +2,22 @@ import { TransformCommandConfig } from '../cli/commands/transform/TransformComma
 import { log, LogLevel } from '../core/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
 import { TransformerId, Transformer } from './Transformer';
-import { AngularTransformer } from './transformers/angular/AngularTransformer';
 import { ExportsTransformer } from './transformers/exports/ExportsTransformer';
 import { JsonTransformer } from './transformers/json/JsonTransformer';
 import { MarkdownTransformer } from './transformers/markdown/MarkdownTransformer';
-import { ReactTransformer } from './transformers/react/ReactTransformer';
-import { SvelteTransformer } from './transformers/svelte/SvelteTransformer';
 import { TypesTransformer } from './transformers/types/TypesTransformer';
 import { VsCodeTransformer } from './transformers/vscode/VsCodeTransformer';
-import { VueTransformer } from './transformers/vue/VueTransformer';
 
 export type TransformerMapper = {
   [id in TransformerId]: Transformer | undefined
 };
 
 export const TransformerMap: TransformerMapper = Object.freeze({
-  [TransformerId.Angular]: AngularTransformer,
   [TransformerId.Json]: JsonTransformer,
   [TransformerId.Types]: TypesTransformer,
   [TransformerId.Exports]: ExportsTransformer,
   [TransformerId.Markdown]: MarkdownTransformer,
-  [TransformerId.React]: ReactTransformer,
-  [TransformerId.Svelte]: SvelteTransformer,
   [TransformerId.VsCode]: VsCodeTransformer,
-  [TransformerId.Vue]: VueTransformer,
   [TransformerId.ALL]: undefined,
 });
 

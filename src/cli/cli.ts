@@ -28,7 +28,7 @@ export function cli() {
     .example('$ $0 transform src -t json vscode -w', '')
     .example('$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json', '')
     .option('discovery', {
-      describe: 'Specify discoverer to use that will be responsible for finding components and extracting their metadata',
+      describe: 'Specify discoverer to use',
       nArgs: 1,
       choices: ['lit'],
       alias: 'd',
@@ -36,7 +36,7 @@ export function cli() {
     })
     .option('transformers', {
       describe: 'Specify transformers to use',
-      choices: ['json', 'vscode', 'types', 'exports', 'markdown', 'react', 'vue', 'svelte', 'angular', 'all'],
+      choices: ['json', 'vscode', 'types', 'exports', 'markdown', 'all'],
       array: true,
       alias: 't',
       requiresArg: true,
@@ -47,10 +47,6 @@ export function cli() {
       string: true,
       alias: 'p',
       default: 'tsconfig.json',
-    })
-    .option('corePkgName', {
-      describe: 'The name of the core package contains the your web components (eg: @wcom/core)',
-      string: true,
     })
     .option('dry', {
       describe: 'Output to console instead of writing to files',
@@ -85,39 +81,19 @@ export function cli() {
       string: true,
     })
     .option('typesOutFile', {
-      describe: 'The path to where the TypeScript typings should be output relative to `cwd`',
+      describe: 'The path to where the component types (.d.ts) should be output relative to `cwd`',
       default: './src/components.d.ts',
       string: true,
     })
     .option('exportsOutFile', {
-      describe: 'The path to where the TypeScript index file that exports all components should be output relative to `cwd`',
+      describe: 'The path to where the exports file should be output relative to `cwd`',
       default: './src/components/index.ts',
       string: true,
     })
     .option('markdownOutDir', {
-      describe: 'The path to the directory where the Markdown files should be output relative to `cwd`',
+      describe: 'The path to where the markdown files should be output relative to `cwd`',
       string: true,
       default: './docs/components',
-    })
-    .option('reactOutDir', {
-      describe: 'The path to the directory where the React components should be output relative to `cwd`',
-      default: './integrations/react/src/components',
-      string: true,
-    })
-    .option('vueOutDir', {
-      describe: 'The path to the directory where the Vue components should be output relative to `cwd`',
-      default: './integrations/vue/src/components',
-      string: true,
-    })
-    .option('svelteOutDir', {
-      describe: 'The path to the directory where the Svelte components should be output relative to `cwd`',
-      default: './integrations/svelte/src/components',
-      string: true,
-    })
-    .option('angularOutDir', {
-      describe: 'The path to the directory where the Angular components should be output relative to `cwd`',
-      default: './integrations/angular/components',
-      string: true,
     })
     .alias('v', 'version')
     .help('h')
