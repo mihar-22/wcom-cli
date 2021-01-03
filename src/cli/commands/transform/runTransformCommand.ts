@@ -4,7 +4,9 @@ import { discover } from '../../../discover';
 import { transform } from '../../../transform';
 import { parseGlobs } from '../../../core/globs';
 import { compileAndWatch, compileOnce } from '../../../core/compile';
-import { log, LogLevel } from '../../../core/log';
+import {
+  clearTerminal, log, LogLevel, logWithTime,
+} from '../../../core/log';
 import { TransformCommandConfig } from './TransformCommandConfig';
 import { resolveOutputPaths, resolvePath } from '../../../core/resolve';
 import { isUndefined } from '../../../utils/unit';
@@ -25,6 +27,8 @@ async function normalizeConfig(config: TransformCommandConfig) {
 }
 
 export async function runTransformCommand(transformConfig: TransformCommandConfig) {
+  clearTerminal();
+
   const config = await normalizeConfig(transformConfig);
   const glob: string[] = config.glob ?? [];
 
@@ -64,7 +68,5 @@ export async function run(
   await Promise.all(config.transformers
     .map((transformer) => transform(components, transformer, { ...config })));
 
-  const totalTime = process.hrtime(startTime);
-  const totalTimeText = green(`${((totalTime[0] * 1000) + (totalTime[1] / 1000000)).toFixed(2)}ms`);
-  log(() => `Finished transforming ${noOfFilesText} in ${totalTimeText}.`, LogLevel.Info);
+  logWithTime(`Finished transforming ${noOfFilesText}`, startTime);
 }

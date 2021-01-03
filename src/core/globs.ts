@@ -2,7 +2,6 @@ import fastGlob from 'fast-glob';
 import { existsSync, lstatSync } from 'fs';
 import normalizePath from 'normalize-path';
 import { arrayFlat } from '../utils/array';
-import { log, LogLevel } from './log';
 
 const IGNORE_GLOBS = ['**/node_modules/**', '**/web_modules/**'];
 const DEFAULT_DIR_GLOB = '**/*.{js,jsx,ts,tsx}';
@@ -12,7 +11,6 @@ export async function parseGlobs(globs: string[]): Promise<any> {
   // eslint-disable-next-line no-param-reassign
   if (globs.length === 0) { globs = DEFAULT_GLOBS; }
   const filePaths = await expandGlobs(globs);
-  log(() => filePaths, LogLevel.Verbose);
   return filePaths.map((filePath) => normalizePath(filePath));
 }
 

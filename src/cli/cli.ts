@@ -90,6 +90,11 @@ export function cli() {
       default: './src/components/index.ts',
       string: true,
     })
+    .option('componentsRootDir', {
+      describe: 'The root directory where components exist relative to `cwd`',
+      string: true,
+      default: './src/components',
+    })
     .option('markdownOutDir', {
       describe: 'The path to where the markdown files should be output relative to `cwd`',
       string: true,

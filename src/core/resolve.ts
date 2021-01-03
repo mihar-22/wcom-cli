@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { dirname, relative, resolve } from 'path';
 import readPkgUp from 'read-pkg-up';
 import normalizePath from 'normalize-path';
 import { isUndefined } from '../utils/unit';
@@ -10,6 +10,11 @@ export async function resolveCorePkgName(root: string) {
 }
 
 export const resolvePath = (...pathSegments: string[]) => normalizePath(resolve(...pathSegments));
+
+export function resolveRelativePath(from: string, to: string) {
+  const path = relative(dirname(from), to);
+  return path.startsWith('.') ? path : `./${path}`;
+}
 
 export async function resolveOutputPaths<T extends StringIndexableObject>(
   cwd: string,

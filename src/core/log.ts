@@ -1,7 +1,7 @@
 import {
   bgCyan, bgMagenta, bgRed,
   bgWhite, bgYellow, bold,
-  dim, black, white,
+  dim, black, white, green,
 } from 'kleur';
 import { Node, SourceFile } from 'typescript';
 import normalizePath from 'normalize-path';
@@ -60,6 +60,8 @@ export function mapLogLevelToString(level: LogLevel) {
   }
 }
 
+export const clearTerminal = () => { console.clear(); };
+
 export function setGlobalLogLevel(level: LogLevel) {
   currentLogLevel = level;
 }
@@ -85,7 +87,20 @@ export const log: Logger = (text, level = LogLevel.Info) => {
   }
 };
 
+export type TimedLogger = (message: string, startTime: [number, number], level?: LogLevel) => void;
+
+export const logWithTime: TimedLogger = (
+  message: string,
+  startTime: [number, number],
+  level = LogLevel.Info,
+) => {
+  const totalTime = process.hrtime(startTime);
+  const totalTimeText = green(`${((totalTime[0] * 1000) + (totalTime[1] / 1000000)).toFixed(2)}ms`);
+  log(() => `${message} in ${totalTimeText}.`, level);
+};
+
 export type StackTraceLogger = (message: string, stack: string, level?: LogLevel) => void;
+
 export const logStackTrace: StackTraceLogger = (
   message: string,
   stack: string,

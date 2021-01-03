@@ -22,7 +22,7 @@ export function validateComponent(
   }
 
   const nonTypeExports = checker
-    .getExportsOfModule(checker.getSymbolAtLocation(component.sourceFile)!)
+    .getExportsOfModule(checker.getSymbolAtLocation(component.source.file)!)
     .filter((symb) => (symb.flags & (SymbolFlags.Interface | SymbolFlags.TypeAlias)) === 0)
     .filter((symb) => symb.name !== component.className);
 
@@ -42,7 +42,7 @@ export function validateUniqueTagNames(components: ComponentMeta[]) {
     if (usedBy.length > 1) {
       log(() => [
         `Found the component tag name \`${tagName}\` more than once. Tag names must be unique.\n`,
-        usedBy.map((c, i) => dim(`\t${i + 1}. ${c.sourceFilePath}`)).join('\n'),
+        usedBy.map((c, i) => dim(`\t${i + 1}. ${c.source.filePath}`)).join('\n'),
       ].join('\n'), LogLevel.Warn);
     }
   });

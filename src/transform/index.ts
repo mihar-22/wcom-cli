@@ -1,5 +1,6 @@
+import { bold } from 'kleur';
 import { TransformCommandConfig } from '../cli/commands/transform/TransformCommandConfig';
-import { log, LogLevel } from '../core/log';
+import { log, LogLevel, logWithTime } from '../core/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
 import { TransformerId, Transformer } from './Transformer';
 import { ExportsTransformer } from './transformers/exports/ExportsTransformer';
@@ -30,7 +31,9 @@ export async function transform(
   transformerId: TransformerId,
   config: TransformCommandConfig,
 ): Promise<void> {
-  log(() => `Starting ${transformerId} transformation`, LogLevel.Verbose);
+  log(`Starting ${bold(transformerId)} transformation`, LogLevel.Verbose);
+
+  const startTime = process.hrtime();
 
   if (transformerId === TransformerId.ALL) {
     await Promise.all(AllTransformers
@@ -39,5 +42,5 @@ export async function transform(
   }
 
   await TransformerMap[transformerId]!.transform(components, config);
-  log(() => `Finished ${transformerId} transformation`, LogLevel.Verbose);
+  logWithTime(`Finished ${bold(transformerId)} transformation`, startTime, LogLevel.Verbose);
 }

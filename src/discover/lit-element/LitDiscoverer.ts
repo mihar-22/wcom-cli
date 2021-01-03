@@ -3,7 +3,6 @@ import {
   isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, PropertyDeclaration, TypeChecker,
 } from 'typescript';
 import { resolve, dirname } from 'path';
-import { log, LogLevel } from '../../core/log';
 import { escapeQuotes } from '../../utils/string';
 import { ComponentMeta, DocTag } from '../ComponentMeta';
 import { Discoverer } from '../Discoverer';
@@ -43,7 +42,6 @@ export const LitDiscoverer: Discoverer = {
     if (!cls.decorators) return false;
     const customElDecorator = cls.decorators.find(isDecoratorNamed('customElement'));
     if (!customElDecorator) return false;
-    log(() => `Found component at ${cls.getSourceFile().fileName}`, LogLevel.Verbose);
     return true;
   },
 
@@ -121,15 +119,15 @@ export const LitDiscoverer: Discoverer = {
     const trimFileExt = (input: string) => input.replace(/\.[^/.]+$/, '');
 
     components.forEach((component) => {
-      const path = trimFileExt(component.sourceFile.fileName);
+      const path = trimFileExt(component.source.filePath);
       map.set(path, component);
       paths.add(path);
     });
 
     components.forEach((component) => {
-      const { sourceFile } = component;
-      const sourceDir = dirname(sourceFile.fileName);
-      sourceFile.statements
+      const { source } = component;
+      const sourceDir = dirname(source.filePath);
+      source.file.statements
         .filter(isImportDeclaration)
         .forEach((importStmt) => {
           const relativeImportPath = escapeQuotes(importStmt.moduleSpecifier.getText());
@@ -141,8 +139,13 @@ export const LitDiscoverer: Discoverer = {
 
           if (paths.has(absolutePathToImport)) {
             const dependency = map.get(absolutePathToImport)!;
+
             if (!component.dependencies.includes(dependency)) {
               component.dependencies.push(dependency);
+            }
+
+            if (!dependency.dependents.includes(component)) {
+              dependency.dependents.push(component);
             }
           }
         });

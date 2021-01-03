@@ -101,13 +101,22 @@ export interface DocTag {
   node: Node
 }
 
+export interface Source {
+  file: SourceFile;
+  dirPath: string;
+  dirName: string;
+  fileName: string;
+  fileBase: string;
+  filePath: string;
+  fileExt: string;
+}
+
 export interface ComponentMeta {
   tagName: string;
   documentation?: string;
   symbol: Symbol;
   declaration: ClassDeclaration
-  sourceFile: SourceFile;
-  sourceFilePath: string;
+  source: Source;
   className: string;
   docTags: DocTag[];
   props: PropMeta[];
@@ -117,5 +126,6 @@ export interface ComponentMeta {
   cssParts: CssPartMeta[];
   slots: SlotMeta[];
   references: TypeReferences;
+  dependents: ComponentMeta[];
   dependencies: ComponentMeta[];
 }

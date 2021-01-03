@@ -1,8 +1,12 @@
+import { bold } from 'kleur';
 import normalizePath from 'normalize-path';
+import { basename, parse } from 'path';
 import {
   forEachChild, Program, SourceFile, TypeChecker, ClassDeclaration, isClassDeclaration,
 } from 'typescript';
-import { log, LogLevel, logStackTrace } from '../core/log';
+import {
+  log, LogLevel, logStackTrace, logWithTime,
+} from '../core/log';
 import { isUndefined } from '../utils/unit';
 import { ComponentMeta } from './ComponentMeta';
 import { Discoverer, DiscovererId } from './Discoverer';
@@ -25,7 +29,7 @@ export function discoverComponent(
     if (isClassDeclaration(node) && discoverer.isComponent(node)) {
       const meta = buildMeta(discoverer, checker, node);
       validateComponent(checker, meta, discoverer.CUSTOM_ELEMENT_DECORATOR_NAME);
-      log(meta, LogLevel.Verbose);
+      log(() => `Found component at: ${bold(meta.source.filePath)}`, LogLevel.Verbose);
       return meta;
     }
 
@@ -38,8 +42,9 @@ export function discover(
   sourceFiles: SourceFile[],
   discovererId: DiscovererId,
 ): ComponentMeta[] {
-  log(() => `Starting ${discovererId} discovery`, LogLevel.Verbose);
+  log(`Starting ${bold(discovererId)} discovery`, LogLevel.Verbose);
 
+  const startTime = process.hrtime();
   const components: ComponentMeta[] = [];
   const checker = program.getTypeChecker();
   const discoverer = discoveryMap[discovererId];
@@ -56,15 +61,24 @@ export function discover(
   validateUniqueTagNames(components);
   discoverer.buildDependencyMap(components);
 
-  log(() => `Finished ${discovererId} discovery`, LogLevel.Verbose);
+  logWithTime(`Finished ${bold(discovererId)} discovery`, startTime, LogLevel.Verbose);
   return components;
 }
 
 function buildMeta(discoverer: Discoverer, checker: TypeChecker, cls: ClassDeclaration) {
   const meta: Partial<ComponentMeta> = {};
   const sourceFile = cls.getSourceFile();
-  meta.sourceFile = sourceFile;
-  meta.sourceFilePath = normalizePath(sourceFile.fileName);
+  const sourceFilePath = normalizePath(sourceFile.fileName);
+  const sourceFileInfo = parse(sourceFilePath);
+  meta.source = {
+    file: sourceFile,
+    fileBase: sourceFileInfo.base,
+    fileName: sourceFileInfo.name,
+    filePath: sourceFilePath,
+    fileExt: sourceFileInfo.ext,
+    dirName: basename(sourceFileInfo.dir),
+    dirPath: sourceFileInfo.dir,
+  };
   meta.declaration = cls;
   meta.symbol = checker.getSymbolAtLocation(cls.name!);
   meta.references = getTypeReferences(cls);
@@ -79,5 +93,6 @@ function buildMeta(discoverer: Discoverer, checker: TypeChecker, cls: ClassDecla
   meta.cssParts = discoverer.findCssParts(meta.docTags);
   meta.slots = discoverer.findSlots(meta.docTags);
   meta.dependencies = [];
+  meta.dependents = [];
   return meta as ComponentMeta;
 }
