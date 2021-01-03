@@ -1,5 +1,5 @@
 import {
-  CallExpression, ClassDeclaration, GetAccessorDeclaration, Identifier, isGetAccessor,
+  CallExpression, ClassDeclaration, GetAccessorDeclaration, isGetAccessor,
   isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, PropertyDeclaration, TypeChecker,
 } from 'typescript';
 import { resolve, dirname } from 'path';
