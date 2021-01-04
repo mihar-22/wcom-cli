@@ -100,6 +100,16 @@ export function cli() {
       string: true,
       default: './docs/components',
     })
+    .option('noMarkdownIndex', {
+      describe: 'Whether a markdown file that indexes all components should NOT be output',
+      boolean: true,
+      default: false,
+    })
+    .option('markdownIndexOutFile', {
+      describe: 'The path to where the markdown index file is output relative to `cwd`',
+      string: true,
+      default: './docs/README.md',
+    })
     .alias('v', 'version')
     .help('h')
     .wrap(110)
