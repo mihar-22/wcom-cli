@@ -18,13 +18,15 @@ export const eventsToMarkdown = (events: EventMeta[]) => {
 
   table.addHeader(['Event', 'Description', 'Type']);
 
-  events.forEach((event) => {
-    table.addRow([
-      `\`${event.name}\``,
-      getDescriptionColumn(event),
-      `\`CustomEvent<${event.typeInfo.resolved}>\``,
-    ]);
-  });
+  events
+    .filter((event) => !event.internal)
+    .forEach((event) => {
+      table.addRow([
+        `\`${event.name}\``,
+        getDescriptionColumn(event),
+        `\`CustomEvent<${event.typeInfo.resolved}>\``,
+      ]);
+    });
 
   content.push(...table.toMarkdown());
   content.push('');

@@ -22,13 +22,15 @@ export const methodsToMarkdown = (methods: MethodMeta[]) => {
 
   table.addHeader(['Method', 'Description', 'Signature']);
 
-  methods.forEach((method) => {
-    table.addRow([
-      getNameColumn(method),
-      getDescriptionColumn(method),
-      getSignatureColumn(method),
-    ]);
-  });
+  methods
+    .filter((method) => !method.internal)
+    .forEach((method) => {
+      table.addRow([
+        getNameColumn(method),
+        getDescriptionColumn(method),
+        getSignatureColumn(method),
+      ]);
+    });
 
   content.push(...table.toMarkdown());
   content.push('');

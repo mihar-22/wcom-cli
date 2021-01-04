@@ -24,14 +24,16 @@ export const propsToMarkdown = (props: PropMeta[]) => {
 
   table.addHeader(['Property', 'Description', 'Type', 'Default']);
 
-  props.forEach((prop) => {
-    table.addRow([
-      getPropertyColumn(prop),
-      getDescriptionColumn(prop),
-      `\`${prop.typeInfo.resolved}\``,
-      `\`${prop.defaultValue}\``,
-    ]);
-  });
+  props
+    .filter((prop) => !prop.internal)
+    .forEach((prop) => {
+      table.addRow([
+        getPropertyColumn(prop),
+        getDescriptionColumn(prop),
+        `\`${prop.typeInfo.resolved}\``,
+        `\`${prop.defaultValue}\``,
+      ]);
+    });
 
   content.push(...table.toMarkdown());
   content.push('');
