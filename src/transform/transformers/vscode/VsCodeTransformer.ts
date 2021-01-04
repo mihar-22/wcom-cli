@@ -1,4 +1,3 @@
-import { resolve } from 'path';
 import { writeFile, ensureFile } from 'fs-extra';
 import { Transformer } from '../../Transformer';
 import { VsCodeTransformerConfig } from './VsCodeTransformerConfig';
@@ -6,8 +5,7 @@ import { escapeQuotes } from '../../../utils/string';
 
 export const VsCodeTransformer: Transformer<VsCodeTransformerConfig> = {
   async transform(components, config) {
-    const { cwd, vscodeOutFile } = config;
-    const targetPath = resolve(cwd, vscodeOutFile);
+    const { vscodeOutFile } = config;
 
     const output: HTMLDataV1 = {
       version: 1.1,
@@ -30,8 +28,8 @@ export const VsCodeTransformer: Transformer<VsCodeTransformerConfig> = {
       });
     });
 
-    await ensureFile(targetPath);
-    await writeFile(targetPath, JSON.stringify(output, undefined, 2));
+    await ensureFile(vscodeOutFile);
+    await writeFile(vscodeOutFile, JSON.stringify(output, undefined, 2));
   },
 };
 

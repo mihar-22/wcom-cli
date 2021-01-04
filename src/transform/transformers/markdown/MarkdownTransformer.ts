@@ -16,22 +16,18 @@ import { MarkdownTransformerConfig } from './MarkdownTransformerConfig';
 export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
   async transform(components, config) {
     const {
-      cwd, markdownOutDir, markdownIndexOutFile,
-      noMarkdownIndex, componentsRootDir,
+      markdownOutDir, markdownIndexOutFile, noMarkdownIndex, componentsRootDir,
     } = config;
-    const sourceDir = resolve(cwd, componentsRootDir);
-    const targetRoot = resolve(cwd, markdownOutDir);
-    const targetIndexPath = resolve(cwd, markdownIndexOutFile ?? '');
-    const indicies: Index[] = [];
 
+    const indicies: Index[] = [];
     const createIndex = (component: ComponentMeta, targetPath: string) => ({
       name: component.tagName,
-      url: relative(targetIndexPath, targetPath).replace('../', './'),
+      url: relative(markdownIndexOutFile, targetPath).replace('../', './'),
     });
 
     await Promise.all(
       components.map(async (component) => {
-        const targetPath = getTargetPath(component, sourceDir, targetRoot);
+        const targetPath = getTargetPath(component, componentsRootDir, markdownOutDir);
         indicies.push(createIndex(component, targetPath));
         await updateMarkdown(
           targetPath,
@@ -43,7 +39,7 @@ export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
 
     if (!noMarkdownIndex && indicies.length > 0) {
       await updateMarkdown(
-        targetIndexPath,
+        markdownIndexOutFile,
         generateDefaultIndexDoc(),
         (userContent) => generateIndexDoc(userContent, indicies),
       );
