@@ -1,5 +1,6 @@
 import { writeFile, ensureFile } from 'fs-extra';
 import { resolveRelativePath } from '../../../core/resolve';
+import { dashToPascalCase } from '../../../utils/string';
 import { Transformer } from '../../Transformer';
 import { ExportsTransformerConfig } from './ExportsTransformerConfig';
 
@@ -9,9 +10,15 @@ export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
     const output: string[] = [];
 
     components.forEach((component) => {
-      const exportPath = resolveRelativePath(exportsOutFile, component.source.filePath);
+      const { className, tagName } = component;
+
+      const exportPath = resolveRelativePath(
+        exportsOutFile,
+        component.source.filePath,
+      ).replace('.ts', '');
+
       output.push(
-        `export { ${component.className} } from '${exportPath.replace('.ts', '')}';`,
+        `export { ${className} as ${dashToPascalCase(tagName)} } from '${exportPath}';`,
       );
     });
 

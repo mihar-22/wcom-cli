@@ -27,3 +27,14 @@ export const deepFilterObjectKeys = <T extends StringIndexableObject, R extends 
 
   return filteredObj;
 };
+
+export const objectHasProperty = <T>(obj: T, prop: keyof T) => Object.prototype
+  .hasOwnProperty.call(obj, prop);
+
+export const sortObjectsBy = <T extends StringIndexableObject>(
+  objects: T[],
+  sortKey: keyof T,
+) => objects.sort((a, b) => {
+    if (a[sortKey] === b[sortKey]) return 0;
+    return (a[sortKey] < b[sortKey]) ? -1 : 1;
+  });

@@ -1,5 +1,5 @@
 import { SlotMeta } from '../../../../discover/ComponentMeta';
-import { MarkdownTable } from './markdown-utils';
+import { MarkdownTable } from './markdownUtils';
 
 export const slotsToMarkdown = (slots: SlotMeta[]) => {
   const content: string[] = [];

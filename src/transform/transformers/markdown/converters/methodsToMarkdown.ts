@@ -1,5 +1,5 @@
 import { MethodMeta } from '../../../../discover/ComponentMeta';
-import { MarkdownTable } from './markdown-utils';
+import { MarkdownTable } from './markdownUtils';
 
 const getNameColumn = (method: MethodMeta) => `\`${method.name}\``;
 

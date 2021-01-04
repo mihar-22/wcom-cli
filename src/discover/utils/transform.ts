@@ -30,7 +30,7 @@ export const hasDocTag = (tags: DocTag[], name: string) => tags
 
 export const getDocumentation = (checker: TypeChecker, id: Identifier) => {
   const comment = checker.getSymbolAtLocation(id)?.getDocumentationComment(checker);
-  return normalizeLineBreaks(displayPartsToString(comment) ?? '').replace(/\n/g, ' ');
+  return normalizeLineBreaks(displayPartsToString(comment) ?? '');
 };
 
 export const resolveType = (checker: TypeChecker, type: Type) => {

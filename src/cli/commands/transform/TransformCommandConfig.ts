@@ -12,6 +12,7 @@ export interface TransformCommandConfig extends
   TypesTransformerConfig,
   VsCodeTransformerConfig,
   ExportsTransformerConfig {
+  pkgName: string;
   discovery: DiscovererId;
   transformers: TransformerId[];
   logLevel: string;

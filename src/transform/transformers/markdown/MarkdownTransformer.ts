@@ -4,13 +4,13 @@ import {
 } from 'fs-extra';
 import { ComponentMeta } from '../../../discover/ComponentMeta';
 import { Transformer } from '../../Transformer';
-import { cssPartsToMarkdown } from './converters/markdown-css-parts';
-import { cssPropsToMarkdown } from './converters/markdown-css-props';
-import { depsToMarkdown } from './converters/markdown-dependencies';
-import { eventsToMarkdown } from './converters/markdown-events';
-import { methodsToMarkdown } from './converters/markdown-methods';
-import { propsToMarkdown } from './converters/markdown-props';
-import { slotsToMarkdown } from './converters/markdown-slots';
+import { cssPartsToMarkdown } from './converters/cssPartsToMarkdown';
+import { cssPropsToMarkdown } from './converters/cssPropsToMarkdown';
+import { depsToMarkdown } from './converters/depsToMarkdown';
+import { eventsToMarkdown } from './converters/eventsToMarkdown';
+import { methodsToMarkdown } from './converters/methodsToMarkdown';
+import { propsToMarkdown } from './converters/propsToMarkdown';
+import { slotsToMarkdown } from './converters/slotsToMarkdown';
 import { MarkdownTransformerConfig } from './MarkdownTransformerConfig';
 
 export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
@@ -31,8 +31,8 @@ export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
         indicies.push(createIndex(component, targetPath));
         await updateMarkdown(
           targetPath,
-          generateDefaultComponentDoc(component),
-          (userContent) => generateComponentDoc(userContent, component, components),
+          serializeDefaultComponentDoc(component),
+          (userContent) => serializeComponentDoc(userContent, component, components),
         );
       }),
     );
@@ -40,8 +40,8 @@ export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
     if (!noMarkdownIndex && indicies.length > 0) {
       await updateMarkdown(
         markdownIndexOutFile,
-        generateDefaultIndexDoc(),
-        (userContent) => generateIndexDoc(userContent, indicies),
+        serializeDefaultIndexDoc(),
+        (userContent) => serializeIndexDoc(userContent, indicies),
       );
     }
   },
@@ -50,12 +50,12 @@ export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
 const updateMarkdown = async (
   targetPath: string,
   defaultMarkdown: string,
-  generateNewContent: (userContent: string) => string,
+  serializeNewContent: (userContent: string) => string,
 ) => {
   const isUpdate = await pathExists(targetPath);
   const content = !isUpdate ? defaultMarkdown : (await readFile(targetPath)).toString();
   const userContent = isUpdate ? getUserContent(content) : content;
-  const newContent = generateNewContent(userContent);
+  const newContent = serializeNewContent(userContent);
   const hasContentChanged = !isUpdate || (content !== newContent);
   if (!hasContentChanged) return;
   if (!isUpdate) await ensureFile(targetPath);
@@ -84,7 +84,7 @@ const getUserContent = (content: string) => content.substr(
   content.indexOf(`\n${AUTO_GEN_COMMENT}`),
 );
 
-const generateDefaultIndexDoc = () => [
+const serializeDefaultIndexDoc = () => [
   '# Documentation',
   '',
   'Follow the links below to find out more information about any of our components.',
@@ -98,7 +98,7 @@ interface Index {
   url: string
 }
 
-const generateIndexDoc = (
+const serializeIndexDoc = (
   userContent: string,
   indicies: Index[],
 ) => [
@@ -108,11 +108,11 @@ const generateIndexDoc = (
   indicies.map((index) => `- [\`${index.name}\`](${index.url})`).join('\n'),
 ].join('\n');
 
-const generateDefaultComponentDoc = (component: ComponentMeta) => [
+const serializeDefaultComponentDoc = (component: ComponentMeta) => [
   `# ${component.tagName}`, '', component.documentation, '',
 ].join('\n');
 
-const generateComponentDoc = (
+const serializeComponentDoc = (
   userContent: string,
   component: ComponentMeta,
   components: ComponentMeta[],

@@ -125,7 +125,6 @@ export interface ComponentMeta {
   cssProps: CssPropMeta[];
   cssParts: CssPartMeta[];
   slots: SlotMeta[];
-  references: TypeReferences;
   dependents: ComponentMeta[];
   dependencies: ComponentMeta[];
 }

@@ -8,7 +8,7 @@ import {
   clearTerminal, log, LogLevel, logWithTime,
 } from '../../../core/log';
 import { TransformCommandConfig } from './TransformCommandConfig';
-import { resolveOutputPaths, resolvePath } from '../../../core/resolve';
+import { resolveCorePkgName, resolveOutputPaths, resolvePath } from '../../../core/resolve';
 import { isUndefined } from '../../../utils/unit';
 
 async function normalizeConfig(config: TransformCommandConfig) {
@@ -23,6 +23,7 @@ async function normalizeConfig(config: TransformCommandConfig) {
   );
 
   configWithResolvedPaths.cwd = rootPath;
+  configWithResolvedPaths.pkgName = (await resolveCorePkgName(rootPath))!;
   return configWithResolvedPaths;
 }
 

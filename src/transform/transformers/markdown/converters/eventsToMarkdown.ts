@@ -1,5 +1,5 @@
 import { EventMeta } from '../../../../discover/ComponentMeta';
-import { MarkdownTable } from './markdown-utils';
+import { MarkdownTable } from './markdownUtils';
 
 const getDescriptionColumn = (event: EventMeta) => {
   const deprecatedText = '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';

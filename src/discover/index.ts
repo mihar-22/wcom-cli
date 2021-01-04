@@ -7,11 +7,12 @@ import {
 import {
   log, LogLevel, logStackTrace, logWithTime,
 } from '../core/log';
+import { sortObjectsBy } from '../utils/object';
 import { isUndefined } from '../utils/unit';
 import { ComponentMeta } from './ComponentMeta';
 import { Discoverer, DiscovererId } from './Discoverer';
 import { LitDiscoverer } from './lit-element/LitDiscoverer';
-import { getDocumentation, getTypeReferences } from './utils/transform';
+import { getDocumentation } from './utils/transform';
 import { validateComponent, validateUniqueTagNames } from './validation';
 
 const discoveryMap: Record<DiscovererId, Discoverer> = Object.freeze({
@@ -58,11 +59,12 @@ export function discover(
     }
   }
 
-  validateUniqueTagNames(components);
-  discoverer.buildDependencyMap(components);
+  const sortedComponents = sortObjectsBy(components, 'tagName');
+  validateUniqueTagNames(sortedComponents);
+  discoverer.buildDependencyMap(sortedComponents);
 
   logWithTime(`Finished ${bold(discovererId)} discovery`, startTime, LogLevel.Verbose);
-  return components;
+  return sortedComponents;
 }
 
 function buildMeta(discoverer: Discoverer, checker: TypeChecker, cls: ClassDeclaration) {
@@ -81,7 +83,6 @@ function buildMeta(discoverer: Discoverer, checker: TypeChecker, cls: ClassDecla
   };
   meta.declaration = cls;
   meta.symbol = checker.getSymbolAtLocation(cls.name!);
-  meta.references = getTypeReferences(cls);
   meta.documentation = getDocumentation(checker, cls.name!);
   meta.className = cls.name!.escapedText as string;
   meta.props = discoverer.findProps(checker, cls);

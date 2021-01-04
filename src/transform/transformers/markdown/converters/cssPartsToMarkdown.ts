@@ -1,5 +1,5 @@
 import { CssPartMeta } from '../../../../discover/ComponentMeta';
-import { MarkdownTable } from './markdown-utils';
+import { MarkdownTable } from './markdownUtils';
 
 export const cssPartsToMarkdown = (cssParts: CssPartMeta[]) => {
   const content: string[] = [];

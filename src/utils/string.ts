@@ -16,3 +16,11 @@ export const splitLineBreaks = (text: string) => {
 export const camelCaseToDashCase = (
   text: string,
 ) => text.replace(/[A-Z]/g, (s) => `-${s.toLowerCase()}`);
+
+export const upperCaseFirstChar = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
+export const dashToPascalCase = (text: string) => text
+  .split('-')
+  .filter((segment) => segment !== '-')
+  .map(upperCaseFirstChar)
+  .join('');

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "author": "Rahim Alwer <rahim_alwer@outlook.com>",
-  "description": "CLI tool to transform and distribute your web component library.",
+  "description": "CLI tool to discover metadata about your web components.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "@types/",
@@ -58,6 +58,7 @@
     "web-components",
     "cli",
     "analyzer",
+    "discover",
     "transformer",
     "documentation",
     "lit-element",
@@ -66,9 +67,7 @@
     "vscode",
     "types",
     "typescript",
-    "markdown",
-    "wrapper",
-    "generator"
+    "markdown"
   ],
   "publishConfig": {
     "access": "public"

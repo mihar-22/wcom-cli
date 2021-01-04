@@ -1,4 +1,4 @@
-import { MarkdownTable } from './markdown-utils';
+import { MarkdownTable } from './markdownUtils';
 import { PropMeta } from '../../../../discover/ComponentMeta';
 
 const getPropertyColumn = (prop: PropMeta) => {
