@@ -1,4 +1,4 @@
-import { writeFile } from 'fs-extra';
+import { writeFile, ensureFile } from 'fs-extra';
 import { resolve } from 'path';
 import { resolveRelativePath } from '../../../core/resolve';
 import { Transformer } from '../../Transformer';
@@ -17,6 +17,7 @@ export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
       );
     });
 
+    await ensureFile(targetPath);
     await writeFile(targetPath, `${output.join('\n')}\n`);
   },
 };

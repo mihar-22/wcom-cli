@@ -77,7 +77,7 @@ export function buildPropMeta<T>(
   meta.documentation = getDocumentation(checker, identifier);
   meta.defaultValue = isPropertyDeclaration(node) ? node.initializer?.getText() : undefined;
   meta.docTags = getDocTags(node);
-  meta.readonly = (!isProperty && !hasSetter) && hasDocTag(meta.docTags, 'readonly');
+  meta.readonly = (!isProperty && !hasSetter) || (!hasSetter && hasDocTag(meta.docTags, 'readonly'));
   meta.internal = hasDocTag(meta.docTags, 'internal');
   meta.deprecated = hasDocTag(meta.docTags, 'deprecated');
   meta.required = !isUndefined(node.exclamationToken) || hasDocTag(meta.docTags, 'required');
@@ -106,8 +106,8 @@ export function buildMethodMeta(checker: TypeChecker, node: MethodDeclaration): 
   );
 
   const typeInfo: MethodTypeInfo = {
-    signature: signatureText,
-    return: returnText,
+    signatureText,
+    returnText,
     references: {
       ...getTypeReferences(node),
       ...getTypeReferences(returnTypeNode, node.getSourceFile()),

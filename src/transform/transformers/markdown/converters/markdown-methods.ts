@@ -8,7 +8,7 @@ const getDescriptionColumn = (method: MethodMeta) => {
   return `${method.deprecated ? deprecatedText : ''}${method.documentation}`;
 };
 
-const getSignatureColumn = (method: MethodMeta) => `\`${method.typeInfo.signature}\``;
+const getSignatureColumn = (method: MethodMeta) => `\`${method.typeInfo.signatureText}\``;
 
 export const methodsToMarkdown = (methods: MethodMeta[]) => {
   const content: string[] = [];

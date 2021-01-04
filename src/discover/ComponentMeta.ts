@@ -43,8 +43,8 @@ export interface PropMeta {
 }
 
 export interface MethodTypeInfo {
-  signature: string;
-  return: string;
+  signatureText: string;
+  returnText: string;
   references: TypeReferences;
 }
 
