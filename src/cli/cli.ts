@@ -77,7 +77,7 @@ export function cli() {
     })
     .option('vscodeOutFile', {
       describe: 'The path to where the vscode file should be output relative to `cwd`',
-      default: './src/vscode-html.json',
+      default: './vscode.json',
       string: true,
     })
     .option('typesOutFile', {

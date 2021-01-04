@@ -17,6 +17,7 @@ import {
 } from './transform';
 import { validatePublicName } from '../validatePublicName';
 import { arrayOnlyUnique } from '../../utils/array';
+import { camelCaseToDashCase } from '../../utils/string';
 
 export interface DefaultPropOptions {
   attribute?: string;
@@ -78,6 +79,7 @@ export function buildPropMeta<T>(
   meta.defaultValue = isPropertyDeclaration(node) ? node.initializer?.getText() : undefined;
   meta.docTags = getDocTags(node);
   meta.readonly = (!isProperty && !hasSetter) || (!hasSetter && hasDocTag(meta.docTags, 'readonly'));
+  meta.attribute = !meta.readonly ? (meta.attribute ?? camelCaseToDashCase(name)) : undefined;
   meta.internal = hasDocTag(meta.docTags, 'internal');
   meta.deprecated = hasDocTag(meta.docTags, 'deprecated');
   meta.required = !isUndefined(node.exclamationToken) || hasDocTag(meta.docTags, 'required');

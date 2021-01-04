@@ -12,3 +12,7 @@ export const splitLineBreaks = (text: string) => {
   if (typeof text !== 'string') return [];
   return normalizeLineBreaks(text).split('\n');
 };
+
+export const camelCaseToDashCase = (
+  text: string,
+) => text.replace(/[A-Z]/g, (s) => `-${s.toLowerCase()}`);
