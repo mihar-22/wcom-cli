@@ -17,8 +17,12 @@ export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
         component.source.filePath,
       ).replace('.ts', '');
 
+      const exportSpecifier = (className === dashToPascalCase(tagName))
+        ? className
+        : `${className} as ${dashToPascalCase(tagName)}`;
+
       output.push(
-        `export { ${className} as ${dashToPascalCase(tagName)} } from '${exportPath}';`,
+        `export { ${exportSpecifier} } from '${exportPath}';`,
       );
     });
 
