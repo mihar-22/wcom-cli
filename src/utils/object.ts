@@ -14,16 +14,18 @@ export const deepFilterObjectKeys = <T extends StringIndexableObject, R extends 
 ): Omit<T, R> => {
   const filteredObj: any = {};
 
-  keysOfObject(obj).forEach((key) => {
-    const value: any = obj[key];
-    if (isObject(value)) {
-      filteredObj[key] = deepFilterObjectKeys(value, omitKeys);
-    } else if (isArray(value)) {
-      filteredObj[key] = value.map((val) => deepFilterObjectKeys(val, omitKeys));
-    } else if (!omitKeys.has(key as any)) {
-      filteredObj[key] = value;
-    }
-  });
+  if (isObject(obj)) {
+    keysOfObject(obj).forEach((key) => {
+      const value: any = obj[key];
+      if (!omitKeys.has(key as any)) {
+        filteredObj[key] = deepFilterObjectKeys(value, omitKeys);
+      }
+    });
+  } else if (isArray(obj)) {
+    return (obj as any[]).map((val) => deepFilterObjectKeys(val, omitKeys)) as any;
+  } else {
+    return obj;
+  }
 
   return filteredObj;
 };
