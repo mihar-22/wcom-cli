@@ -25,7 +25,7 @@ export function cli() {
     },
   })
     .example('$ $0 transform --transformers vscode', '')
-    .example('$ $0 transform src -t json vscode -w', '')
+    .example('$ $0 transform src -t json vscode', '')
     .example('$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json', '')
     .option('discovery', {
       describe: 'Specify discoverer to use',
@@ -42,21 +42,9 @@ export function cli() {
       requiresArg: true,
       default: ['types'],
     })
-    .option('project', {
-      describe: 'The name of the TS config file that\'ll be used for watch mode',
-      string: true,
-      alias: 'p',
-      default: 'tsconfig.json',
-    })
     .option('dry', {
       describe: 'Output to console instead of writing to files',
       boolean: true,
-      default: false,
-    })
-    .option('watch', {
-      describe: 'Watch files for any changes to re-run discovery and transformations',
-      boolean: true,
-      alias: 'w',
       default: false,
     })
     .option('logLevel', {

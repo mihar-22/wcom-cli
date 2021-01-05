@@ -3,7 +3,7 @@ import { green } from 'kleur';
 import { discover } from '../../../discover';
 import { transform } from '../../../transform';
 import { parseGlobs } from '../../../core/globs';
-import { compileAndWatch, compileOnce } from '../../../core/compile';
+import { compileOnce } from '../../../core/compile';
 import {
   clearTerminal, log, LogLevel, logWithTime,
 } from '../../../core/log';
@@ -35,15 +35,9 @@ export async function runTransformCommand(transformConfig: TransformCommandConfi
 
   log(config, LogLevel.Verbose);
 
-  if (config.watch) {
-    compileAndWatch(config.cwd, config.project, undefined, async (program) => {
-      await run(program, glob, config);
-    });
-  } else {
-    const filePaths = await parseGlobs(glob);
-    const program = compileOnce(filePaths);
-    await run(program, glob, config, filePaths);
-  }
+  const filePaths = await parseGlobs(glob);
+  const program = compileOnce(filePaths);
+  await run(program, glob, config, filePaths);
 }
 
 export async function run(

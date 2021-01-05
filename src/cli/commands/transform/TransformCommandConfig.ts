@@ -17,9 +17,9 @@ export interface TransformCommandConfig extends
   transformers: TransformerId[];
   logLevel: string;
   dry: boolean;
-  watch: boolean;
   glob?: string[];
   globs?: string[];
   cwd: string;
-  project: string;
+  // watch: boolean;
+  // project: string;
 }
