@@ -19,11 +19,11 @@ other information each component contains. This metadata can then be 'transforme
 
 Current transformers include:
 
-- Exports ([example](https://github.com/wcom-js/lit-test/blob/main/src/components/index.ts))
-- JSON ([example](https://github.com/wcom-js/lit-test/blob/main/components.json))
-- Markdown ([example](https://github.com/wcom-js/lit-test/tree/main/docs))
-- VSCode Custom HTML Data ([example](https://github.com/wcom-js/lit-test/blob/main/vscode.html-data.json))
-- HTML + JSX Types ([example](https://github.com/wcom-js/lit-test/blob/main/src/components.d.ts))
+- Exports ([example](https://github.com/mihar-22/wcom-lit-test/blob/main/src/components/index.ts))
+- JSON ([example](https://github.com/mihar-22/wcom-lit-test/blob/main/components.json))
+- Markdown ([example](https://github.com/mihar-22/wcom-lit-test/tree/main/docs))
+- VSCode Custom HTML Data ([example](https://github.com/mihar-22/wcom-lit-test/blob/main/vscode.html-data.json))
+- HTML + JSX Types ([example](https://github.com/mihar-22/wcom-lit-test/blob/main/src/components.d.ts))
 
 ## Caveats
 
@@ -36,7 +36,7 @@ to be aware of are:
 - It does not follow or search for metadata inside Mixins or Subclasses. Try to use 
 [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance).
 - Events are only discovered if they are created with the `@event` decorator provided by 
-[`@wcom/events`](https://github.com/wcom-js/events).
+[`@wcom/events`](https://github.com/mihar-22/wcom-events).
 
 ## Install
 
@@ -53,7 +53,7 @@ $: pnpm install @wcom/cli
 
 ## Usage
 
-Firstly see this [Button](https://github.com/wcom-js/lit-test/blob/main/src/components/button/button.component.ts) 
+Firstly see this [Button](https://github.com/mihar-22/wcom-lit-test/blob/main/src/components/button/button.component.ts) 
 as an example of how to document your component.
 
 Next simply run the `transform` command as follows...
