@@ -7,9 +7,9 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "@types/",
-  "homepage": "https://github.com/wcom-js/cli",
+  "homepage": "https://github.com/mihar-22/wcom-cli",
   "bugs": {
-    "url": "https://github.com/wcom-js/cli/issues"
+    "url": "https://github.com/mihar-22/wcom-cli/issues"
   },
   "bin": {
     "wcom": "cli.js"
