@@ -31,8 +31,10 @@ This tool has been designed with the intention of supporting multiple libraries 
 time it only supports [LitElement](https://lit-element.polymer-project.org). Some other caveats 
 to be aware of are:
 
+- Only works with TypeScript and decorators.
 - Only elements tagged with `@customElement` are discovered.
-- It does not follow or search for metadata inside Mixins or Subclasses.
+- It does not follow or search for metadata inside Mixins or Subclasses. Try to use 
+[composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance).
 - Events are only discovered if they are created with the `@event` decorator provided by 
 [`@wcom/events`](https://github.com/wcom-js/events).
 
