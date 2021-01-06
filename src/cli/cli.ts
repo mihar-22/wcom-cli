@@ -60,7 +60,7 @@ export function cli() {
     })
     .option('jsonOutFile', {
       describe: 'The path to where the JSON file should be output relative to `cwd`',
-      default: './custom-elements.json',
+      default: './components.json',
       string: true,
     })
     .option('vscodeOutFile', {

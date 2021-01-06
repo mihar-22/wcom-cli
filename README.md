@@ -20,7 +20,7 @@ other information each component contains. This metadata can then be 'transforme
 Current transformers include:
 
 - Exports ([example](https://github.com/wcom-js/lit-test/blob/main/src/components/index.ts))
-- JSON ([example](https://github.com/wcom-js/lit-test/blob/main/custom-elements.json))
+- JSON ([example](https://github.com/wcom-js/lit-test/blob/main/components.json))
 - Markdown ([example](https://github.com/wcom-js/lit-test/tree/main/docs))
 - VSCode Custom HTML Data ([example](https://github.com/wcom-js/lit-test/blob/main/vscode.html-data.json))
 - HTML + JSX Types ([example](https://github.com/wcom-js/lit-test/blob/main/src/components.d.ts))
