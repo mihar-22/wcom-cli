@@ -13,16 +13,28 @@
 
 ## Introduction
 
-wip.
+This is a lightweight CLI tool that parses your TypeScript files, discovers components and 
+collects [metadata](./src/discover/ComponentMeta.ts) such as what properties, methods, events and 
+other information each component contains. This metadata can then be 'transformed' into other formats.
+
+Current transformers include:
+
+- Exports ([example](https://github.com/wcom-js/lit-test/blob/main/src/components/index.ts))
+- JSON ([example](https://github.com/wcom-js/lit-test/blob/main/custom-elements.json))
+- Markdown ([example](https://github.com/wcom-js/lit-test/tree/main/docs))
+- VSCode Custom HTML Data ([example](https://github.com/wcom-js/lit-test/blob/main/vscode.html-data.json))
+- HTML + JSX Types ([example](https://github.com/wcom-js/lit-test/blob/main/src/components.d.ts))
 
 ## Caveats
 
-- only lit element atm
-- @customElement
-- has to be exported
-- @prop, methods, @event (use wc-events) - must be public
-- does not follow extends or mixins
-- cssprops, parts and slots must be in component definition doc
+This tool has been designed with the intention of supporting multiple libraries but at this 
+time it only supports [LitElement](https://lit-element.polymer-project.org). Some other caveats 
+to be aware of are:
+
+- Only elements tagged with `@customElement` are discovered.
+- It does not follow or search for metadata inside Mixins or Subclasses.
+- Events are only discovered if they are created with the `@event` decorator provided by 
+[`@wcom/events`](https://github.com/wcom-js/events).
 
 ## Install
 
@@ -39,4 +51,13 @@ $: pnpm install @wcom/cli
 
 ## Usage
 
-wip.
+Firstly see this [Button](https://github.com/wcom-js/lit-test/blob/main/src/components/button/button.component.ts) 
+as an example of how to document your component.
+
+Next simply run the `transform` command as follows...
+
+```bash
+$: wcom transform src/**/*.ts -t json exports markdown
+```
+
+For more information call `wcom transform -h` to see what arguments are available.
