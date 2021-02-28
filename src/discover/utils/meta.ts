@@ -1,19 +1,44 @@
 /* eslint-disable no-bitwise */
 import {
-  Identifier, MethodDeclaration, NodeBuilderFlags, PropertyDeclaration, SignatureKind, Type,
-  TypeChecker, TypeFlags, TypeFormatFlags, UnionType, ClassElement, TypeNode, isTypeReferenceNode,
-  isIdentifier, GetAccessorDeclaration, isPropertyDeclaration,
+  Identifier,
+  MethodDeclaration,
+  NodeBuilderFlags,
+  PropertyDeclaration,
+  SignatureKind,
+  Type,
+  TypeChecker,
+  TypeFlags,
+  TypeFormatFlags,
+  UnionType,
+  ClassElement,
+  TypeNode,
+  isTypeReferenceNode,
+  isIdentifier,
+  GetAccessorDeclaration,
+  isPropertyDeclaration,
 } from 'typescript';
 import { bold } from 'kleur';
 import { LogLevel, reportDiagnosticByNode } from '../../core/log';
 import { isUndefined } from '../../utils/unit';
 import {
-  DocTag, EventMeta, MethodMeta, MethodTypeInfo, PropMeta, PropTypeInfo, TypeText,
+  DocTag,
+  EventMeta,
+  MethodMeta,
+  MethodTypeInfo,
+  PropMeta,
+  PropTypeInfo,
+  TypeText,
 } from '../ComponentMeta';
 import { getDeclarationParameters, isDecoratorNamed } from './decorators';
 import {
-  getDocTags, getDocumentation, getTypeReferences, hasDocTag, isMemberPrivate, resolveType,
-  splitJsDocTagText, typeToString,
+  getDocTags,
+  getDocumentation,
+  getTypeReferences,
+  hasDocTag,
+  isMemberPrivate,
+  resolveType,
+  splitJsDocTagText,
+  typeToString,
 } from './transform';
 import { validatePublicName } from '../validatePublicName';
 import { arrayOnlyUnique } from '../../utils/array';
@@ -44,15 +69,21 @@ export function buildPropMeta<T>(
   const name = symbol.escapedName as string;
   const isProperty = isPropertyDeclaration(node);
   const decorator = node.decorators?.find(isDecoratorNamed(propDecoratorName));
-  const decoratorParams = decorator ? getDeclarationParameters<T>(decorator) : undefined;
+  const decoratorParams = decorator
+    ? getDeclarationParameters<T>(decorator)
+    : undefined;
   const propOptions = (decoratorParams?.[0] ?? {}) as T;
-  const hasSetter = !isProperty ? (symbol.declarations.length > 1) : undefined;
+  const hasSetter = !isProperty ? symbol.declarations.length > 1 : undefined;
 
   if (isProperty && isMemberPrivate(node)) {
-    reportDiagnosticByNode([
-      `Property \`${name}\` cannot be \`private\` or \`protected\`. Use the`,
-      `\`@${internalPropDecoratorName}()\` decorator instead.`,
-    ].join('\n'), node, LogLevel.Warn);
+    reportDiagnosticByNode(
+      [
+        `Property \`${name}\` cannot be \`private\` or \`protected\`. Use the`,
+        `\`@${internalPropDecoratorName}()\` decorator instead.`,
+      ].join('\n'),
+      node,
+      LogLevel.Warn,
+    );
   }
 
   validatePublicName(name, 'property', node);
@@ -60,7 +91,7 @@ export function buildPropMeta<T>(
   const typeText = typeTextFromTSType(type);
 
   // Prop can have an attribute if type is NOT "unknown".
-  if ((typeText !== 'unknown') || (!isProperty && hasSetter)) {
+  if (typeText !== 'unknown' || (!isProperty && hasSetter)) {
     const { attribute, reflect } = transformPropOptions(propOptions);
     meta.attribute = attribute?.trim().toLowerCase();
     meta.reflect = reflect ?? false;
@@ -76,18 +107,28 @@ export function buildPropMeta<T>(
   meta.hasSetter = hasSetter;
   meta.typeInfo = getPropTypeInfo(checker, node, type);
   meta.documentation = getDocumentation(checker, identifier);
-  meta.defaultValue = isPropertyDeclaration(node) ? node.initializer?.getText() : undefined;
+  meta.defaultValue = isPropertyDeclaration(node)
+    ? node.initializer?.getText()
+    : undefined;
   meta.docTags = getDocTags(node);
-  meta.readonly = (!isProperty && !hasSetter) || (!hasSetter && hasDocTag(meta.docTags, 'readonly'));
-  meta.attribute = !meta.readonly ? (meta.attribute ?? camelCaseToDashCase(name)) : undefined;
+  meta.readonly =
+    (!isProperty && !hasSetter) ||
+    (!hasSetter && hasDocTag(meta.docTags, 'readonly'));
+  meta.attribute = !meta.readonly
+    ? meta.attribute ?? camelCaseToDashCase(name)
+    : undefined;
   meta.internal = hasDocTag(meta.docTags, 'internal');
   meta.deprecated = hasDocTag(meta.docTags, 'deprecated');
-  meta.required = !isUndefined(node.exclamationToken) || hasDocTag(meta.docTags, 'required');
+  meta.required =
+    !isUndefined(node.exclamationToken) || hasDocTag(meta.docTags, 'required');
   meta.optional = !isUndefined(node.questionToken);
   return meta as PropMeta;
 }
 
-export function buildMethodMeta(checker: TypeChecker, node: MethodDeclaration): MethodMeta {
+export function buildMethodMeta(
+  checker: TypeChecker,
+  node: MethodDeclaration,
+): MethodMeta {
   const meta: Partial<MethodMeta> = {};
   const identifier = node.name as Identifier;
   const symbol = checker.getSymbolAtLocation(identifier);
@@ -132,7 +173,7 @@ export function buildMethodMeta(checker: TypeChecker, node: MethodDeclaration): 
 }
 
 export interface DefaultEventOptions {
-  name?: string
+  name?: string;
   bubbles?: boolean;
   composed?: boolean;
 }
@@ -148,10 +189,14 @@ export function buildEventMeta<T>(
   const symbol = checker.getSymbolAtLocation(identifier)!;
   const type = checker.getTypeAtLocation(node);
   const name = symbol.escapedName as string;
-  const decorator = node.decorators!.find(isDecoratorNamed(eventDecoratorName))!;
+  const decorator = node.decorators!.find(
+    isDecoratorNamed(eventDecoratorName),
+  )!;
   const decoratorParams = getDeclarationParameters<T>(decorator);
   const eventOptions = (decoratorParams[0] ?? {}) as T;
-  const { name: eventName, composed, bubbles } = transformEventOptions(eventOptions);
+  const { name: eventName, composed, bubbles } = transformEventOptions(
+    eventOptions,
+  );
   meta.name = eventName?.trim() ?? name;
   meta.composed = composed ?? true;
   meta.bubbles = bubbles ?? true;
@@ -173,13 +218,13 @@ export function buildMetaFromTags(
   example: string,
 ) {
   const tags = docTags
-    .filter((tag) => tag.name === tagName)
-    .map((tag) => splitJsDocTagText(tag));
+    .filter(tag => tag.name === tagName)
+    .map(tag => splitJsDocTagText(tag));
 
   return arrayOnlyUnique(
     tags,
     'title',
-    (tag) => {
+    tag => {
       reportDiagnosticByNode(
         `Found duplicate \`@${tagName}\` tags with the name \`${tag.title}\`.`,
         tag.node,
@@ -187,12 +232,16 @@ export function buildMetaFromTags(
       );
     },
     true,
-  ).map((tag) => {
+  ).map(tag => {
     if (!tag.description) {
-      reportDiagnosticByNode([
-        `Tag \`@${tagName}\` is missing a description.`,
-        `\n${bold('EXAMPLE')}\n\n${example}`,
-      ].join('\n'), tag.node, LogLevel.Warn);
+      reportDiagnosticByNode(
+        [
+          `Tag \`@${tagName}\` is missing a description.`,
+          `\n${bold('EXAMPLE')}\n\n${example}`,
+        ].join('\n'),
+        tag.node,
+        LogLevel.Warn,
+      );
     }
 
     return {
@@ -208,13 +257,13 @@ export function buildSlotMeta(tags: DocTag[]) {
   let hasSeenDefaultSlot = false;
 
   const slots = tags
-    .filter((tag) => tag.name === 'slot')
-    .map((tag) => splitJsDocTagText(tag));
+    .filter(tag => tag.name === 'slot')
+    .map(tag => splitJsDocTagText(tag));
 
   return arrayOnlyUnique(
     slots,
     'title',
-    (slot) => {
+    slot => {
       reportDiagnosticByNode(
         `Found duplicate \`@slot\` tags with the name \`${slot.title}\`.`,
         slot.node,
@@ -222,14 +271,20 @@ export function buildSlotMeta(tags: DocTag[]) {
       );
     },
     true,
-  ).map((slot) => {
+  ).map(slot => {
     const isDefault = !slot.description;
 
     if (isDefault && hasSeenDefaultSlot) {
-      reportDiagnosticByNode([
-        'Non default `@slot` tag is missing a description.',
-        `\n${bold('EXAMPLE')}\n\n@slot body: Used to pass in the body of this component.`,
-      ].join('\n'), slot.node, LogLevel.Warn);
+      reportDiagnosticByNode(
+        [
+          'Non default `@slot` tag is missing a description.',
+          `\n${bold(
+            'EXAMPLE',
+          )}\n\n@slot body: Used to pass in the body of this component.`,
+        ].join('\n'),
+        slot.node,
+        LogLevel.Warn,
+      );
     }
 
     if (isDefault) {
@@ -239,8 +294,8 @@ export function buildSlotMeta(tags: DocTag[]) {
 
     return {
       name: isDefault ? '' : slot.title,
-      default: isDefault && (defaultSlots === 1),
-      description: isDefault ? slot.title : (slot.description ?? ''),
+      default: isDefault && defaultSlots === 1,
+      description: isDefault ? slot.title : slot.description ?? '',
       node: slot.node,
     };
   });
@@ -260,22 +315,28 @@ export const getPropTypeInfo = (
   };
 };
 
-export const getEventTypeInfo = (typeChecker: TypeChecker, node: PropertyDeclaration) => {
+export const getEventTypeInfo = (
+  typeChecker: TypeChecker,
+  node: PropertyDeclaration,
+) => {
   const sourceFile = node.getSourceFile();
   const eventType = node.type ? getEventType(node.type) : undefined;
   return {
     original: eventType ? eventType.getText() : 'any',
-    resolved: eventType ? resolveType(typeChecker, typeChecker.getTypeFromTypeNode(eventType)) : 'any',
+    resolved: eventType
+      ? resolveType(typeChecker, typeChecker.getTypeFromTypeNode(eventType))
+      : 'any',
     references: eventType ? getTypeReferences(eventType, sourceFile) : {},
   };
 };
 
 export const getEventType = (type: TypeNode): TypeNode | undefined => {
-  if (isTypeReferenceNode(type)
-    && isIdentifier(type.typeName)
-    && type.typeName.text === 'EventEmitter'
-    && type.typeArguments
-    && (type.typeArguments.length > 0)
+  if (
+    isTypeReferenceNode(type) &&
+    isIdentifier(type.typeName) &&
+    type.typeName.text === 'EventEmitter' &&
+    type.typeArguments &&
+    type.typeArguments.length > 0
   ) {
     return type.typeArguments[0];
   }
@@ -303,7 +364,7 @@ export const typeTextFromTSType = (type: Type): TypeText => {
 const checkType = (type: Type, check: (type: Type) => boolean) => {
   if (type.flags & TypeFlags.Union) {
     const union = type as UnionType;
-    if (union.types.some((t) => checkType(t, check))) {
+    if (union.types.some(t => checkType(t, check))) {
       return true;
     }
   }
@@ -313,7 +374,10 @@ const checkType = (type: Type, check: (type: Type) => boolean) => {
 
 const isBoolean = (t: Type) => {
   if (t) {
-    return !!(t.flags & (TypeFlags.Boolean | TypeFlags.BooleanLike | TypeFlags.BooleanLike));
+    return !!(
+      t.flags &
+      (TypeFlags.Boolean | TypeFlags.BooleanLike | TypeFlags.BooleanLike)
+    );
   }
 
   return false;
@@ -321,7 +385,10 @@ const isBoolean = (t: Type) => {
 
 const isNumber = (t: Type) => {
   if (t) {
-    return !!(t.flags & (TypeFlags.Number | TypeFlags.NumberLike | TypeFlags.NumberLiteral));
+    return !!(
+      t.flags &
+      (TypeFlags.Number | TypeFlags.NumberLike | TypeFlags.NumberLiteral)
+    );
   }
 
   return false;
@@ -329,7 +396,10 @@ const isNumber = (t: Type) => {
 
 const isString = (t: Type) => {
   if (t) {
-    return !!(t.flags & (TypeFlags.String | TypeFlags.StringLike | TypeFlags.StringLiteral));
+    return !!(
+      t.flags &
+      (TypeFlags.String | TypeFlags.StringLike | TypeFlags.StringLiteral)
+    );
   }
 
   return false;

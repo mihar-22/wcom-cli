@@ -10,7 +10,7 @@ import { TypesTransformer } from './transformers/types/TypesTransformer';
 import { VsCodeTransformer } from './transformers/vscode/VsCodeTransformer';
 
 export type TransformerMapper = {
-  [id in TransformerId]: Transformer | undefined
+  [id in TransformerId]: Transformer | undefined;
 };
 
 export const TransformerMap: TransformerMapper = Object.freeze({
@@ -23,8 +23,8 @@ export const TransformerMap: TransformerMapper = Object.freeze({
 });
 
 const AllTransformers = Object.keys(TransformerMap)
-  .filter((key) => key !== TransformerId.ALL)
-  .map((key) => TransformerMap[key as TransformerId]);
+  .filter(key => key !== TransformerId.ALL)
+  .map(key => TransformerMap[key as TransformerId]);
 
 export async function transform(
   components: ComponentMeta[],
@@ -36,11 +36,18 @@ export async function transform(
   const startTime = process.hrtime();
 
   if (transformerId === TransformerId.ALL) {
-    await Promise.all(AllTransformers
-      .map((transformer) => transformer!.transform(components, config)));
+    await Promise.all(
+      AllTransformers.map(transformer =>
+        transformer!.transform(components, config),
+      ),
+    );
     return;
   }
 
   await TransformerMap[transformerId]!.transform(components, config);
-  logWithTime(`Finished ${bold(transformerId)} transformation`, startTime, LogLevel.Verbose);
+  logWithTime(
+    `Finished ${bold(transformerId)} transformation`,
+    startTime,
+    LogLevel.Verbose,
+  );
 }

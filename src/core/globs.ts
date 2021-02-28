@@ -9,9 +9,11 @@ const DEFAULT_GLOBS = [DEFAULT_DIR_GLOB];
 
 export async function parseGlobs(globs: string[]): Promise<any> {
   // eslint-disable-next-line no-param-reassign
-  if (globs.length === 0) { globs = DEFAULT_GLOBS; }
+  if (globs.length === 0) {
+    globs = DEFAULT_GLOBS;
+  }
   const filePaths = await expandGlobs(globs);
-  return filePaths.map((filePath) => normalizePath(filePath));
+  return filePaths.map(filePath => normalizePath(filePath));
 }
 
 async function expandGlobs(globs: string | string[]): Promise<string[]> {
@@ -20,7 +22,7 @@ async function expandGlobs(globs: string | string[]): Promise<string[]> {
 
   return arrayFlat(
     await Promise.all(
-      globs.map((g) => {
+      globs.map(g => {
         try {
           /**
            * Test if the glob points to a directory. If so, return the result of a new glob that

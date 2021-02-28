@@ -1,25 +1,30 @@
 {
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
   "env": {
     "browser": true
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "extends": [
-    "airbnb-typescript/base"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "prettier"
   ],
   "rules": {
     "no-console": "off",
-    "no-restricted-syntax": "off",
+    "no-underscore-dangle": "off",
     "default-case": "off",
     "class-methods-use-this": "off",
     "import/prefer-default-export": "off",
-    "@typescript-eslint/no-useless-contructor": "off",
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-use-before-define": "off",
-    "@typescript-eslint/no-unused-expressions": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+    "max-classes-per-file": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "@typescript-eslint/no-unused-expressions": "off"
   }
 }

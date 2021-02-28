@@ -2,7 +2,8 @@ import { EventMeta } from '../../../../discover/ComponentMeta';
 import { MarkdownTable } from './markdownUtils';
 
 const getDescriptionColumn = (event: EventMeta) => {
-  const deprecatedText = '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
+  const deprecatedText =
+    '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
   return `${event.deprecated ? deprecatedText : ''}${event.documentation}`;
 };
 
@@ -19,8 +20,8 @@ export const eventsToMarkdown = (events: EventMeta[]) => {
   table.addHeader(['Event', 'Description', 'Type']);
 
   events
-    .filter((event) => !event.internal)
-    .forEach((event) => {
+    .filter(event => !event.internal)
+    .forEach(event => {
       table.addRow([
         `\`${event.name}\``,
         getDescriptionColumn(event),

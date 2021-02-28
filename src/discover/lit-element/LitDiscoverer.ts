@@ -1,6 +1,13 @@
 import {
-  CallExpression, ClassDeclaration, GetAccessorDeclaration, isGetAccessor,
-  isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, PropertyDeclaration, TypeChecker,
+  CallExpression,
+  ClassDeclaration,
+  GetAccessorDeclaration,
+  isGetAccessor,
+  isImportDeclaration,
+  isMethodDeclaration,
+  isPropertyDeclaration,
+  PropertyDeclaration,
+  TypeChecker,
 } from 'typescript';
 import { resolve, dirname } from 'path';
 import { escapeQuotes } from '../../utils/string';
@@ -9,7 +16,12 @@ import { Discoverer } from '../Discoverer';
 import { isDecoratedClassMember, isDecoratorNamed } from '../utils/decorators';
 import { getDocTags, isMemberPrivate } from '../utils/transform';
 import {
-  buildEventMeta, buildMetaFromTags, buildMethodMeta, buildPropMeta, buildSlotMeta, getMemberName,
+  buildEventMeta,
+  buildMetaFromTags,
+  buildMethodMeta,
+  buildPropMeta,
+  buildSlotMeta,
+  getMemberName,
 } from '../utils/meta';
 
 export interface LitPropOptions {
@@ -18,7 +30,7 @@ export interface LitPropOptions {
 }
 
 export interface LitEventOptions {
-  name?: string
+  name?: string;
   bubbles?: boolean;
   composed?: boolean;
 }
@@ -40,52 +52,62 @@ export const LitDiscoverer: Discoverer = {
 
   isComponent(cls: ClassDeclaration) {
     if (!cls.decorators) return false;
-    const customElDecorator = cls.decorators.find(isDecoratorNamed('customElement'));
+    const customElDecorator = cls.decorators.find(
+      isDecoratorNamed('customElement'),
+    );
     if (!customElDecorator) return false;
     return true;
   },
 
   findTagName(cls: ClassDeclaration) {
-    const customElDecorator = cls.decorators!.find(isDecoratorNamed('customElement'))!;
+    const customElDecorator = cls.decorators!.find(
+      isDecoratorNamed('customElement'),
+    )!;
     const tagName = (customElDecorator.expression as CallExpression).arguments[0].getText();
     return escapeQuotes(tagName);
   },
 
   findProps(checker: TypeChecker, cls: ClassDeclaration) {
     return cls.members
-      .filter((node) => (
-        isPropertyDeclaration(node)
-        && isDecoratedClassMember(node)
-        && node.decorators!.find(isDecoratorNamed('property')))
-        || (isGetAccessor(node) && !isMemberPrivate(node)))
-      .map((node) => buildPropMeta<LitPropOptions>(
-        checker,
-        (node as PropertyDeclaration | GetAccessorDeclaration),
-        'property',
-        'internalProperty',
-        (opts) => (opts ?? {}),
-      ));
+      .filter(
+        node =>
+          (isPropertyDeclaration(node) &&
+            isDecoratedClassMember(node) &&
+            node.decorators!.find(isDecoratorNamed('property'))) ||
+          (isGetAccessor(node) && !isMemberPrivate(node)),
+      )
+      .map(node =>
+        buildPropMeta<LitPropOptions>(
+          checker,
+          node as PropertyDeclaration | GetAccessorDeclaration,
+          'property',
+          'internalProperty',
+          opts => opts ?? {},
+        ),
+      );
   },
 
   findMethods(checker: TypeChecker, cls: ClassDeclaration) {
     return cls.members
       .filter(isMethodDeclaration)
-      .filter((node) => !isMemberPrivate(node))
-      .filter((node) => !LIT_LIFECYCLE_METHODS.has(getMemberName(checker, node)!))
-      .map((node) => buildMethodMeta(checker, node));
+      .filter(node => !isMemberPrivate(node))
+      .filter(node => !LIT_LIFECYCLE_METHODS.has(getMemberName(checker, node)!))
+      .map(node => buildMethodMeta(checker, node));
   },
 
   findEvents(checker: TypeChecker, cls: ClassDeclaration) {
     return cls.members
       .filter(isPropertyDeclaration)
       .filter(isDecoratedClassMember)
-      .filter((node) => node.decorators!.find(isDecoratorNamed('event')))
-      .map((node) => buildEventMeta<LitEventOptions>(
-        checker,
-        node,
-        'event',
-        (opts) => (opts ?? {}),
-      ));
+      .filter(node => node.decorators!.find(isDecoratorNamed('event')))
+      .map(node =>
+        buildEventMeta<LitEventOptions>(
+          checker,
+          node,
+          'event',
+          opts => opts ?? {},
+        ),
+      );
   },
 
   findDocTags(cls: ClassDeclaration) {
@@ -118,37 +140,37 @@ export const LitDiscoverer: Discoverer = {
 
     const trimFileExt = (input: string) => input.replace(/\.[^/.]+$/, '');
 
-    components.forEach((component) => {
+    components.forEach(component => {
       const path = trimFileExt(component.source.filePath);
       map.set(path, component);
       paths.add(path);
     });
 
-    components.forEach((component) => {
+    components.forEach(component => {
       const { source } = component;
       const sourceDir = dirname(source.filePath);
-      source.file.statements
-        .filter(isImportDeclaration)
-        .forEach((importStmt) => {
-          const relativeImportPath = escapeQuotes(importStmt.moduleSpecifier.getText());
-          let absolutePathToImport = resolve(sourceDir, relativeImportPath);
+      source.file.statements.filter(isImportDeclaration).forEach(importStmt => {
+        const relativeImportPath = escapeQuotes(
+          importStmt.moduleSpecifier.getText(),
+        );
+        let absolutePathToImport = resolve(sourceDir, relativeImportPath);
 
-          if (absolutePathToImport.endsWith('ts')) {
-            absolutePathToImport = trimFileExt(absolutePathToImport);
+        if (absolutePathToImport.endsWith('ts')) {
+          absolutePathToImport = trimFileExt(absolutePathToImport);
+        }
+
+        if (paths.has(absolutePathToImport)) {
+          const dependency = map.get(absolutePathToImport)!;
+
+          if (!component.dependencies.includes(dependency)) {
+            component.dependencies.push(dependency);
           }
 
-          if (paths.has(absolutePathToImport)) {
-            const dependency = map.get(absolutePathToImport)!;
-
-            if (!component.dependencies.includes(dependency)) {
-              component.dependencies.push(dependency);
-            }
-
-            if (!dependency.dependents.includes(component)) {
-              dependency.dependents.push(component);
-            }
+          if (!dependency.dependents.includes(component)) {
+            dependency.dependents.push(component);
           }
-        });
+        }
+      });
     });
   },
 };

@@ -17,7 +17,9 @@ export const TypesTransformer: Transformer<TypesTransformerConfig> = {
   async transform(components, config) {
     const { typesOutFile, pkgName, watch } = config;
     const isDevMode = watch;
-    const typeImports = components.flatMap((component) => findTypeImports(component));
+    const typeImports = components.flatMap(component =>
+      findTypeImports(component),
+    );
 
     await copyJSXTypes(typesOutFile);
 

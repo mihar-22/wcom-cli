@@ -12,7 +12,7 @@ export const cssPropsToMarkdown = (cssProps: CssPropMeta[]) => {
   const table = new MarkdownTable();
   table.addHeader(['Name', 'Description']);
 
-  cssProps.forEach((cssProp) => {
+  cssProps.forEach(cssProp => {
     table.addRow([`\`${cssProp.name}\``, cssProp.description ?? '']);
   });
 

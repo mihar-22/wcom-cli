@@ -12,7 +12,7 @@ export const cssPartsToMarkdown = (cssParts: CssPartMeta[]) => {
   const table = new MarkdownTable();
   table.addHeader(['Name', 'Description']);
 
-  cssParts.forEach((cssPart) => {
+  cssParts.forEach(cssPart => {
     table.addRow([`\`${cssPart.name}\``, cssPart.description ?? '']);
   });
 

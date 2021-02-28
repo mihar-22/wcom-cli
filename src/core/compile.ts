@@ -42,15 +42,15 @@ const defaultOptions: CompilerOptions = {
 };
 
 export function readTsConfigFile(root: string) {
-  const configPath = findConfigFile(
-    root,
-    sys.fileExists,
-    'tsconfig.json',
-  );
+  const configPath = findConfigFile(root, sys.fileExists, 'tsconfig.json');
 
-  log(() => (!isUndefined(configPath)
-    ? `Using TS config file: ${configPath}`
-    : `Could not find TS config file from: ${root} [using default]`), LogLevel.Info);
+  log(
+    () =>
+      !isUndefined(configPath)
+        ? `Using TS config file: ${configPath}`
+        : `Could not find TS config file from: ${root} [using default]`,
+    LogLevel.Info,
+  );
 
   const tsConfig = !isUndefined(configPath)
     ? readConfigFile(configPath!, sys.readFile).config
@@ -64,7 +64,10 @@ export interface CompileResult {
   files: SourceFile[];
 }
 
-export function compileOnce(filePaths: string[], options: CompilerOptions = defaultOptions) {
+export function compileOnce(
+  filePaths: string[],
+  options: CompilerOptions = defaultOptions,
+) {
   return createProgram(filePaths, options);
 }
 
@@ -77,7 +80,10 @@ const tsDiagnosticCategoryToLogLevel: Record<DiagnosticCategory, LogLevel> = {
 
 function reportDiagnostic(diagnostic: Diagnostic) {
   const sourceFile = diagnostic.file;
-  const message = flattenDiagnosticMessageText(diagnostic.messageText, sys.newLine);
+  const message = flattenDiagnosticMessageText(
+    diagnostic.messageText,
+    sys.newLine,
+  );
   const logLevel = tsDiagnosticCategoryToLogLevel[diagnostic.category];
   const pos = diagnostic.start
     ? sourceFile?.getLineAndCharacterOfPosition(diagnostic.start)
@@ -112,7 +118,7 @@ export function compileAndWatch(
   );
 
   const postProgramCreateRef = host.afterProgramCreate;
-  host.afterProgramCreate = (builderProgram) => {
+  host.afterProgramCreate = builderProgram => {
     const program = builderProgram.getProgram();
     onProgramCreate(program);
     postProgramCreateRef!(builderProgram);

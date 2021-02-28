@@ -6,7 +6,7 @@ const getDependencyLink = (
   depTagName: string,
   components: ComponentMeta[],
 ) => {
-  const dependency = components.find((c) => c.tagName === depTagName);
+  const dependency = components.find(c => c.tagName === depTagName);
 
   if (dependency) {
     const relativePathToDependency = relative(
@@ -35,8 +35,10 @@ export const depsToMarkdown = (
 
   if (hasDependents) {
     const usedBy = component.dependents
-      .map((dependent) => dependent.tagName)
-      .map((tagName) => ` - ${getDependencyLink(component, tagName, components)}`);
+      .map(dependent => dependent.tagName)
+      .map(
+        tagName => ` - ${getDependencyLink(component, tagName, components)}`,
+      );
 
     content.push('### Used by');
     content.push('');
@@ -46,8 +48,10 @@ export const depsToMarkdown = (
 
   if (hasDependencies) {
     const dependsOn = component.dependencies
-      .map((dependency) => dependency.tagName)
-      .map((tagName) => ` - ${getDependencyLink(component, tagName, components)}`);
+      .map(dependency => dependency.tagName)
+      .map(
+        tagName => ` - ${getDependencyLink(component, tagName, components)}`,
+      );
 
     content.push('### Depends on');
     content.push('');

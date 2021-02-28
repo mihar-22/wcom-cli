@@ -13,8 +13,8 @@
 
 ## Introduction
 
-This is a lightweight CLI tool that parses your TypeScript files, discovers components and 
-collects [metadata](./src/discover/ComponentMeta.ts) such as what properties, methods, events and 
+This is a lightweight CLI tool that parses your TypeScript files, discovers components and
+collects [metadata](./src/discover/ComponentMeta.ts) such as what properties, methods, events and
 other information each component contains. This metadata can then be 'transformed' into other formats.
 
 Current transformers include:
@@ -27,33 +27,25 @@ Current transformers include:
 
 ## Caveats
 
-This tool has been designed with the intention of supporting multiple libraries but at this 
-time it only supports [LitElement](https://lit-element.polymer-project.org). Some other caveats 
-to be aware of are:
-
-- Only works with TypeScript and decorators.
-- Only elements tagged with `@customElement` are discovered.
-- It does not follow or search for metadata inside Mixins or Subclasses. Try to use 
-[composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance).
-- Events are only discovered if they are created with the `@event` decorator provided by 
-[`@wcom/events`](https://github.com/mihar-22/wcom-events).
+This tool has been designed with the intention of supporting multiple libraries but at this
+time it only supports [LitElement](https://lit-element.polymer-project.org).
 
 ## Install
 
 ```bash
 # npm
-$: npm install @wcom/cli
+$: npm install @wcom/cli -D
 
 # yarn
-$: yarn add @wcom/cli
+$: yarn add @wcom/cli -D
 
 # pnpm
-$: pnpm install @wcom/cli
+$: pnpm install @wcom/cli -D
 ```
 
 ## Usage
 
-Firstly see this [Button](https://github.com/mihar-22/wcom-lit-test/blob/main/src/components/button/button.component.ts) 
+Firstly see this [Button](https://github.com/mihar-22/wcom-lit-test/blob/main/src/components/button/button.component.ts)
 as an example of how to document your component.
 
 Next simply run the `transform` command as follows...

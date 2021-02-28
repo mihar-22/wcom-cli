@@ -18,15 +18,9 @@
     "target": "ESNext",
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "@types",
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "dist"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules/",
-    "src/tests/",
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules/", "src/tests/"]
 }

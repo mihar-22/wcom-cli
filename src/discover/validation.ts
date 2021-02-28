@@ -16,34 +16,51 @@ export function validateComponent(
   if (!isUndefined(tagError)) {
     reportDiagnosticByNode(
       tagError,
-      component.declaration.decorators!.find(isDecoratorNamed(customElementDecoratorName))!,
+      component.declaration.decorators!.find(
+        isDecoratorNamed(customElementDecoratorName),
+      )!,
       LogLevel.Error,
     );
   }
 
   const nonTypeExports = checker
     .getExportsOfModule(checker.getSymbolAtLocation(component.source.file)!)
-    .filter((symb) => (symb.flags & (SymbolFlags.Interface | SymbolFlags.TypeAlias)) === 0)
-    .filter((symb) => symb.name !== component.className);
+    .filter(
+      symb =>
+        (symb.flags & (SymbolFlags.Interface | SymbolFlags.TypeAlias)) === 0,
+    )
+    .filter(symb => symb.name !== component.className);
 
-  nonTypeExports.forEach((symb) => {
-    const errorNode = symb.valueDeclaration ? symb.valueDeclaration : symb.declarations[0];
-    reportDiagnosticByNode([
-      `To allow efficient bundling, modules using \`@${customElementDecoratorName}()\` can only`,
-      'have a single export which is the component class itself.',
-    ].join('\n'), errorNode, LogLevel.Error);
+  nonTypeExports.forEach(symb => {
+    const errorNode = symb.valueDeclaration
+      ? symb.valueDeclaration
+      : symb.declarations[0];
+    reportDiagnosticByNode(
+      [
+        `To allow efficient bundling, modules using \`@${customElementDecoratorName}()\` can only`,
+        'have a single export which is the component class itself.',
+      ].join('\n'),
+      errorNode,
+      LogLevel.Error,
+    );
   });
 }
 
 export function validateUniqueTagNames(components: ComponentMeta[]) {
-  arrayOnlyUnique(components, 'tagName').forEach((component) => {
+  arrayOnlyUnique(components, 'tagName').forEach(component => {
     const { tagName } = component;
-    const usedBy = components.filter((c) => c.tagName === tagName);
+    const usedBy = components.filter(c => c.tagName === tagName);
     if (usedBy.length > 1) {
-      log(() => [
-        `Found the component tag name \`${tagName}\` more than once. Tag names must be unique.\n`,
-        usedBy.map((c, i) => dim(`\t${i + 1}. ${c.source.filePath}`)).join('\n'),
-      ].join('\n'), LogLevel.Warn);
+      log(
+        () =>
+          [
+            `Found the component tag name \`${tagName}\` more than once. Tag names must be unique.\n`,
+            usedBy
+              .map((c, i) => dim(`\t${i + 1}. ${c.source.filePath}`))
+              .join('\n'),
+          ].join('\n'),
+        LogLevel.Warn,
+      );
     }
   });
 }

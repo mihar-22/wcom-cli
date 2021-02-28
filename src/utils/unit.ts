@@ -1,33 +1,52 @@
-export const isNull = (input: any): input is null => input === null;
+import { Constructor } from './types';
 
-export const isUndefined = (input: any): input is undefined => typeof input === 'undefined';
+export const isNull = (input: unknown): input is null => input === null;
 
-export const isNullOrUndefined = (
-  input: any,
-): input is null | undefined => isNull(input) || isUndefined(input);
+export const isUndefined = (input: unknown): input is undefined =>
+  typeof input === 'undefined';
 
-export const getConstructor = (input: any): object | undefined => (
-  !isNullOrUndefined(input) ? input.constructor : undefined
-);
+export const isNil = (input: unknown): input is null | undefined =>
+  isNull(input) || isUndefined(input);
 
-export const isObject = (input: any): input is Object => getConstructor(input) === Object;
+export const getConstructor = <T = unknown>(value: unknown): T | undefined =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  !isNil(value) ? (value as any).constructor : undefined;
 
-export const isNumber = (
-  input: any,
-): input is number => getConstructor(input) === Number && !Number.isNaN(input);
+export const isObject = (value: unknown): boolean =>
+  getConstructor(value) === Object;
 
-export const isString = (input: any): input is string => getConstructor(input) === String;
+export const isNumber = (input: unknown): input is number =>
+  getConstructor(input) === Number && !Number.isNaN(input);
 
-export const isBoolean = (input: any): input is boolean => getConstructor(input) === Boolean;
+export const isString = (input: unknown): input is string =>
+  getConstructor(input) === String;
 
-export const isFunction = (input: any): input is Function => getConstructor(input) === Function;
+export const isBoolean = (input: unknown): input is boolean =>
+  getConstructor(input) === Boolean;
 
-export const isArray = (input: any): input is any[] => Array.isArray(input);
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const isFunction = (input: unknown): input is Function =>
+  getConstructor(input) === Function;
 
-export const isInstanceOf = (input: any, constructor: any) => Boolean(
-  input && constructor && input instanceof constructor,
-);
+export const isArray = (input: unknown): input is unknown[] =>
+  Array.isArray(input);
 
-export const isPrototypeOf = (input: any, object: any) => Boolean(
-  input && object && Object.isPrototypeOf.call(object.prototype, input),
-);
+export const isInstanceOf = (
+  value: unknown,
+  constructor: Constructor<unknown>,
+): boolean => Boolean(value && constructor && value instanceof constructor);
+
+export const isPrototypeOf = (
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  value: Object,
+  object: Constructor<unknown>,
+): boolean =>
+  Boolean(
+    value && object && Object.isPrototypeOf.call(object.prototype, value),
+  );
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const noop = (..._: unknown[]): void => {
+  // ...
+};

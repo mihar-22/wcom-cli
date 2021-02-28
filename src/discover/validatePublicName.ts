@@ -7,12 +7,16 @@ export const validatePublicName = (
   element: ClassElement,
 ) => {
   if (RESERVED_PUBLIC_MEMBERS.has(propName.toLowerCase())) {
-    reportDiagnosticByNode([
-      `The ${memberType} \`${propName}\` is a reserved public name.\n`,
-      'Reusing names that are already defined on the element\'s prototype may cause',
-      'unexpected runtime errors or user-interface issues on various browsers, so',
-      'it\'s best to avoid them entirely.',
-    ].join('\n'), element, LogLevel.Warn);
+    reportDiagnosticByNode(
+      [
+        `The ${memberType} \`${propName}\` is a reserved public name.\n`,
+        "Reusing names that are already defined on the element's prototype may cause",
+        'unexpected runtime errors or user-interface issues on various browsers, so',
+        "it's best to avoid them entirely.",
+      ].join('\n'),
+      element,
+      LogLevel.Warn,
+    );
   }
 };
 
@@ -271,6 +275,6 @@ const ALL_KEYS = [
   ...ELEMENT_KEYS,
   ...NODE_KEYS,
   ...JSX_KEYS,
-].map((p) => p.toLowerCase());
+].map(p => p.toLowerCase());
 
 const RESERVED_PUBLIC_MEMBERS = new Set(ALL_KEYS);

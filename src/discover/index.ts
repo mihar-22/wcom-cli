@@ -2,11 +2,14 @@ import { bold } from 'kleur';
 import normalizePath from 'normalize-path';
 import { basename, parse } from 'path';
 import {
-  forEachChild, Program, SourceFile, TypeChecker, ClassDeclaration, isClassDeclaration,
+  forEachChild,
+  Program,
+  SourceFile,
+  TypeChecker,
+  ClassDeclaration,
+  isClassDeclaration,
 } from 'typescript';
-import {
-  log, LogLevel, logStackTrace, logWithTime,
-} from '../core/log';
+import { log, LogLevel, logStackTrace, logWithTime } from '../core/log';
 import { sortObjectsBy } from '../utils/object';
 import { isUndefined } from '../utils/unit';
 import { ComponentMeta } from './ComponentMeta';
@@ -26,11 +29,18 @@ export function discoverComponent(
 ) {
   const discoverer = discoveryMap[discovererId];
 
-  return forEachChild(sourceFile, (node) => {
+  return forEachChild(sourceFile, node => {
     if (isClassDeclaration(node) && discoverer.isComponent(node)) {
       const meta = buildMeta(discoverer, checker, node);
-      validateComponent(checker, meta, discoverer.CUSTOM_ELEMENT_DECORATOR_NAME);
-      log(() => `Found component at: ${bold(meta.source.filePath)}`, LogLevel.Verbose);
+      validateComponent(
+        checker,
+        meta,
+        discoverer.CUSTOM_ELEMENT_DECORATOR_NAME,
+      );
+      log(
+        () => `Found component at: ${bold(meta.source.filePath)}`,
+        LogLevel.Verbose,
+      );
       return meta;
     }
 
@@ -63,11 +73,19 @@ export function discover(
   validateUniqueTagNames(sortedComponents);
   discoverer.buildDependencyMap(sortedComponents);
 
-  logWithTime(`Finished ${bold(discovererId)} discovery`, startTime, LogLevel.Verbose);
+  logWithTime(
+    `Finished ${bold(discovererId)} discovery`,
+    startTime,
+    LogLevel.Verbose,
+  );
   return sortedComponents;
 }
 
-function buildMeta(discoverer: Discoverer, checker: TypeChecker, cls: ClassDeclaration) {
+function buildMeta(
+  discoverer: Discoverer,
+  checker: TypeChecker,
+  cls: ClassDeclaration,
+) {
   const meta: Partial<ComponentMeta> = {};
   const sourceFile = cls.getSourceFile();
   const sourceFilePath = normalizePath(sourceFile.fileName);

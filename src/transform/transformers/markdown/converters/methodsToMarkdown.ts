@@ -4,11 +4,13 @@ import { MarkdownTable } from './markdownUtils';
 const getNameColumn = (method: MethodMeta) => `\`${method.name}\``;
 
 const getDescriptionColumn = (method: MethodMeta) => {
-  const deprecatedText = '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
+  const deprecatedText =
+    '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
   return `${method.deprecated ? deprecatedText : ''}${method.documentation}`;
 };
 
-const getSignatureColumn = (method: MethodMeta) => `\`${method.typeInfo.signatureText}\``;
+const getSignatureColumn = (method: MethodMeta) =>
+  `\`${method.typeInfo.signatureText}\``;
 
 export const methodsToMarkdown = (methods: MethodMeta[]) => {
   const content: string[] = [];
@@ -23,8 +25,8 @@ export const methodsToMarkdown = (methods: MethodMeta[]) => {
   table.addHeader(['Method', 'Description', 'Signature']);
 
   methods
-    .filter((method) => !method.internal)
-    .forEach((method) => {
+    .filter(method => !method.internal)
+    .forEach(method => {
       table.addRow([
         getNameColumn(method),
         getDescriptionColumn(method),

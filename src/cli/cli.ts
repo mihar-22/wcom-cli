@@ -2,31 +2,38 @@ import yargs from 'yargs';
 import { isCLIError } from './cli-error';
 import { runTransformCommand } from './commands/transform/runTransformCommand';
 import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
-import { logStackTrace, mapLogLevelStringToNumber, setGlobalLogLevel } from '../core/log';
+import {
+  logStackTrace,
+  mapLogLevelStringToNumber,
+  setGlobalLogLevel,
+} from '../core/log';
 
 export function cli() {
   yargs
     .usage('Usage: $0 <command> [glob..] [options]')
     .command<TransformCommandConfig>({
-    command: ['transform [glob..]', '$0'],
-    describe: 'Discovers and transforms components into specified formats',
-    handler: async (config) => {
-      setGlobalLogLevel(mapLogLevelStringToNumber(config.logLevel));
+      command: ['transform [glob..]', '$0'],
+      describe: 'Discovers and transforms components into specified formats',
+      handler: async config => {
+        setGlobalLogLevel(mapLogLevelStringToNumber(config.logLevel));
 
-      try {
-        await runTransformCommand(config);
-      } catch (e) {
-        if (isCLIError(e)) {
-          logStackTrace(e.message, e.stack);
-        } else {
-          throw e;
+        try {
+          await runTransformCommand(config);
+        } catch (e) {
+          if (isCLIError(e)) {
+            logStackTrace(e.message, e.stack);
+          } else {
+            throw e;
+          }
         }
-      }
-    },
-  })
+      },
+    })
     .example('$ $0 transform --transformers vscode', '')
     .example('$ $0 transform src -t json vscode', '')
-    .example('$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json', '')
+    .example(
+      '$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json',
+      '',
+    )
     .option('discovery', {
       describe: 'Specify discoverer to use',
       nArgs: 1,
@@ -55,26 +62,31 @@ export function cli() {
     })
     .option('cwd', {
       string: true,
-      describe: 'The base path to use when emitting files (useful when working inside a monorepo)',
+      describe:
+        'The base path to use when emitting files (useful when working inside a monorepo)',
       default: process.cwd(),
     })
     .option('jsonOutFile', {
-      describe: 'The path to where the JSON file should be output relative to `cwd`',
+      describe:
+        'The path to where the JSON file should be output relative to `cwd`',
       default: './components.json',
       string: true,
     })
     .option('vscodeOutFile', {
-      describe: 'The path to where the vscode file should be output relative to `cwd`',
+      describe:
+        'The path to where the vscode file should be output relative to `cwd`',
       default: './vscode.html-data.json',
       string: true,
     })
     .option('typesOutFile', {
-      describe: 'The path to where the component types (.d.ts) should be output relative to `cwd`',
+      describe:
+        'The path to where the component types (.d.ts) should be output relative to `cwd`',
       default: './src/components.d.ts',
       string: true,
     })
     .option('exportsOutFile', {
-      describe: 'The path to where the exports file should be output relative to `cwd`',
+      describe:
+        'The path to where the exports file should be output relative to `cwd`',
       default: './src/components/index.ts',
       string: true,
     })
@@ -84,17 +96,20 @@ export function cli() {
       default: './src/components',
     })
     .option('markdownOutDir', {
-      describe: 'The path to where the markdown files should be output relative to `cwd`',
+      describe:
+        'The path to where the markdown files should be output relative to `cwd`',
       string: true,
       default: './docs/components',
     })
     .option('noMarkdownIndex', {
-      describe: 'Whether a markdown file that indexes all components should NOT be output',
+      describe:
+        'Whether a markdown file that indexes all components should NOT be output',
       boolean: true,
       default: false,
     })
     .option('markdownIndexOutFile', {
-      describe: 'The path to where the markdown index file is output relative to `cwd`',
+      describe:
+        'The path to where the markdown index file is output relative to `cwd`',
       string: true,
       default: './docs/README.md',
     })
@@ -102,6 +117,5 @@ export function cli() {
     .help('h')
     .wrap(110)
     .strict()
-    .alias('h', 'help')
-    .argv;
+    .alias('h', 'help').argv;
 }

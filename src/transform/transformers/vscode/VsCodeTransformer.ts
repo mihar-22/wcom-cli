@@ -12,18 +12,22 @@ export const VsCodeTransformer: Transformer<VsCodeTransformerConfig> = {
       tags: [],
     };
 
-    components.forEach((component) => {
+    components.forEach(component => {
       output.tags!.push({
         name: component.tagName,
         description: component.documentation,
         attributes: component.props
-          .filter((prop) => !!prop.attribute && !prop.readonly && !prop.internal)
-          .map((prop) => ({
+          .filter(prop => !!prop.attribute && !prop.readonly && !prop.internal)
+          .map(prop => ({
             name: prop.attribute,
             description: prop.documentation,
-            values: (['string', 'number'].includes(prop.typeText) && prop.typeInfo.original.includes('|'))
-              ? prop.typeInfo.original.split('|').map((v) => ({ name: escapeQuotes(v.trim()) }))
-              : undefined,
+            values:
+              ['string', 'number'].includes(prop.typeText) &&
+              prop.typeInfo.original.includes('|')
+                ? prop.typeInfo.original
+                    .split('|')
+                    .map(v => ({ name: escapeQuotes(v.trim()) }))
+                : undefined,
           })),
       });
     });

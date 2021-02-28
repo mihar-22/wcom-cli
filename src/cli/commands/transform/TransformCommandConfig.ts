@@ -6,12 +6,12 @@ import { MarkdownTransformerConfig } from '../../../transform/transformers/markd
 import { TypesTransformerConfig } from '../../../transform/transformers/types/TypesTransformerConfig';
 import { VsCodeTransformerConfig } from '../../../transform/transformers/vscode/VsCodeTransformerConfig';
 
-export interface TransformCommandConfig extends
-  JsonTransformerConfig,
-  MarkdownTransformerConfig,
-  TypesTransformerConfig,
-  VsCodeTransformerConfig,
-  ExportsTransformerConfig {
+export interface TransformCommandConfig
+  extends JsonTransformerConfig,
+    MarkdownTransformerConfig,
+    TypesTransformerConfig,
+    VsCodeTransformerConfig,
+    ExportsTransformerConfig {
   pkgName: string;
   discovery: DiscovererId;
   transformers: TransformerId[];

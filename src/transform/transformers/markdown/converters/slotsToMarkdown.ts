@@ -12,7 +12,7 @@ export const slotsToMarkdown = (slots: SlotMeta[]) => {
   const table = new MarkdownTable();
   table.addHeader(['Slot', 'Description']);
 
-  slots.forEach((slot) => {
+  slots.forEach(slot => {
     table.addRow([
       slot.name === '' ? '' : `\`"${slot.name}"\``,
       slot.description ?? '',

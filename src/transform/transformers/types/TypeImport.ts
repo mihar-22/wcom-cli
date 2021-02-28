@@ -1,6 +1,9 @@
 import { dirname, resolve } from 'path';
 import {
-  ComponentMeta, MethodTypeInfo, PropTypeInfo, TypeReference,
+  ComponentMeta,
+  MethodTypeInfo,
+  PropTypeInfo,
+  TypeReference,
 } from '../../../discover/ComponentMeta';
 import { isUndefined } from '../../../utils/unit';
 
@@ -19,10 +22,15 @@ export interface TypeImport {
   path: string;
 }
 
-export function resolveTypeImportPath(type: TypeReference, sourceFilePath: string) {
-  const importPath = (type.location === 'local') ? sourceFilePath : type.path!;
+export function resolveTypeImportPath(
+  type: TypeReference,
+  sourceFilePath: string,
+) {
+  const importPath = type.location === 'local' ? sourceFilePath : type.path!;
   // If this is a relative path make it absolute.
-  return importPath.startsWith('.') ? resolve(dirname(sourceFilePath), importPath) : importPath;
+  return importPath.startsWith('.')
+    ? resolve(dirname(sourceFilePath), importPath)
+    : importPath;
 }
 
 export function clearTypeImportInfo() {
@@ -44,15 +52,21 @@ export function aliasTypeName(typeImport: TypeImport) {
 }
 
 export function findTypeImports(component: ComponentMeta): TypeImport[] {
-  const typeImports = ([...component.props, ...component.methods, ...component.events])
-    .filter((prop) => prop.typeInfo?.references)
-    .map((prop) => prop.typeInfo.references)
-    .flatMap((references) => Object.keys(references).map((name) => ({
-      ...references[name],
-      name,
-    })))
-    .filter((type) => type.location !== 'global')
-    .map((type) => ({
+  const typeImports = [
+    ...component.props,
+    ...component.methods,
+    ...component.events,
+  ]
+    .filter(prop => prop.typeInfo?.references)
+    .map(prop => prop.typeInfo.references)
+    .flatMap(references =>
+      Object.keys(references).map(name => ({
+        ...references[name],
+        name,
+      })),
+    )
+    .filter(type => type.location !== 'global')
+    .map(type => ({
       ...type,
       path: resolveTypeImportPath(type, component.source.filePath),
     }))
@@ -62,7 +76,7 @@ export function findTypeImports(component: ComponentMeta): TypeImport[] {
       seenTypes.add(typeKey);
       return true;
     })
-    .map((type) => ({
+    .map(type => ({
       ...type,
       alias: aliasTypeName(type),
     }));
@@ -75,10 +89,13 @@ export function resolveAliasForComponentMember(
   component: ComponentMeta,
   typeInfo: PropTypeInfo | MethodTypeInfo,
 ) {
-  let type = (typeInfo as PropTypeInfo).original ?? (typeInfo as MethodTypeInfo).signatureText;
+  let type =
+    (typeInfo as PropTypeInfo).original ??
+    (typeInfo as MethodTypeInfo).signatureText;
 
-  const typeImports = (componentTypeImports.get(component.tagName) ?? [])
-    .filter((typeImport) => !isUndefined(typeImport.alias));
+  const typeImports = (
+    componentTypeImports.get(component.tagName) ?? []
+  ).filter(typeImport => !isUndefined(typeImport.alias));
 
   for (const typeImport of typeImports) {
     type = type.replace(typeImport.name, typeImport.alias!);

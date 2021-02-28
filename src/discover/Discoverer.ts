@@ -1,7 +1,13 @@
 import { ClassDeclaration, TypeChecker } from 'typescript';
 import {
-  ComponentMeta, CssPartMeta, CssPropMeta, DocTag,
-  EventMeta, MethodMeta, PropMeta, SlotMeta,
+  ComponentMeta,
+  CssPartMeta,
+  CssPropMeta,
+  DocTag,
+  EventMeta,
+  MethodMeta,
+  PropMeta,
+  SlotMeta,
 } from './ComponentMeta';
 
 export enum DiscovererId {

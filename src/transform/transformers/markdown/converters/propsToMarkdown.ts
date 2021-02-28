@@ -8,7 +8,8 @@ const getPropertyColumn = (prop: PropMeta) => {
 };
 
 const getDescriptionColumn = (prop: PropMeta) => {
-  const deprecatedText = '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
+  const deprecatedText =
+    '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
   return `${prop.deprecated ? deprecatedText : ''}${prop.documentation}`;
 };
 
@@ -25,8 +26,8 @@ export const propsToMarkdown = (props: PropMeta[]) => {
   table.addHeader(['Property', 'Description', 'Type', 'Default']);
 
   props
-    .filter((prop) => !prop.internal)
-    .forEach((prop) => {
+    .filter(prop => !prop.internal)
+    .forEach(prop => {
       table.addRow([
         getPropertyColumn(prop),
         getDescriptionColumn(prop),

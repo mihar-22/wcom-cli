@@ -9,7 +9,7 @@ export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
     const { exportsOutFile } = config;
     const output: string[] = [];
 
-    components.forEach((component) => {
+    components.forEach(component => {
       const { className, tagName } = component;
 
       const exportPath = resolveRelativePath(
@@ -17,13 +17,12 @@ export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
         component.source.filePath,
       ).replace('.ts', '');
 
-      const exportSpecifier = (className === dashToPascalCase(tagName))
-        ? className
-        : `${className} as ${dashToPascalCase(tagName)}`;
+      const exportSpecifier =
+        className === dashToPascalCase(tagName)
+          ? className
+          : `${className} as ${dashToPascalCase(tagName)}`;
 
-      output.push(
-        `export { ${exportSpecifier} } from '${exportPath}';`,
-      );
+      output.push(`export { ${exportSpecifier} } from '${exportPath}';`);
     });
 
     await ensureFile(exportsOutFile);

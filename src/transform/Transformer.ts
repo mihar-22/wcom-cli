@@ -10,5 +10,5 @@ export enum TransformerId {
 }
 
 export interface Transformer<ConfigType = any> {
-  transform(components: ComponentMeta[], config: ConfigType): Promise<void>
+  transform(components: ComponentMeta[], config: ConfigType): Promise<void>;
 }

@@ -1,6 +1,14 @@
 import {
-  SourceFile, Symbol, PropertyDeclaration, MethodDeclaration, ClassDeclaration,
-  Type, Decorator, Node, Signature, GetAccessorDeclaration,
+  SourceFile,
+  Symbol,
+  PropertyDeclaration,
+  MethodDeclaration,
+  ClassDeclaration,
+  Type,
+  Decorator,
+  Node,
+  Signature,
+  GetAccessorDeclaration,
 } from 'typescript';
 
 export type TypeText = 'any' | 'string' | 'number' | 'boolean' | 'unknown';
@@ -21,7 +29,7 @@ export interface PropTypeInfo {
 }
 
 export interface PropMeta {
-  symbol: Symbol;
+  symbol: symbol;
   type: Type;
   declaration: PropertyDeclaration | GetAccessorDeclaration;
   decorator: Decorator;
@@ -31,7 +39,7 @@ export interface PropMeta {
   name: string;
   required: boolean;
   readonly: boolean;
-  optional: boolean,
+  optional: boolean;
   attribute: string;
   reflect: boolean;
   internal: boolean;
@@ -49,7 +57,7 @@ export interface MethodTypeInfo {
 }
 
 export interface MethodMeta {
-  symbol: Symbol;
+  symbol: symbol;
   declaration: MethodDeclaration;
   name: string;
   typeInfo: MethodTypeInfo;
@@ -62,7 +70,7 @@ export interface MethodMeta {
 }
 
 export interface EventMeta {
-  symbol: Symbol;
+  symbol: symbol;
   declaration: PropertyDeclaration;
   decorator: Decorator;
   type: Type;
@@ -77,28 +85,28 @@ export interface EventMeta {
 }
 
 export interface CssPropMeta {
-  name: string
-  description?: string
-  node: Node
+  name: string;
+  description?: string;
+  node: Node;
 }
 
 export interface CssPartMeta {
-  name: string
-  description?: string
-  node: Node
+  name: string;
+  description?: string;
+  node: Node;
 }
 
 export interface SlotMeta {
-  name: string
-  default: boolean
-  description?: string
-  node: Node
+  name: string;
+  default: boolean;
+  description?: string;
+  node: Node;
 }
 
 export interface DocTag {
-  name: string
-  text?: string
-  node: Node
+  name: string;
+  text?: string;
+  node: Node;
 }
 
 export interface Source {
@@ -114,8 +122,8 @@ export interface Source {
 export interface ComponentMeta {
   tagName: string;
   documentation?: string;
-  symbol: Symbol;
-  declaration: ClassDeclaration
+  symbol: symbol;
+  declaration: ClassDeclaration;
   source: Source;
   className: string;
   docTags: DocTag[];

@@ -1,20 +1,23 @@
 import {
-  ClassElement, Decorator, Expression, isCallExpression,
-  isObjectLiteralExpression, isStringLiteral,
+  ClassElement,
+  Decorator,
+  Expression,
+  isCallExpression,
+  isObjectLiteralExpression,
+  isStringLiteral,
 } from 'typescript';
 import { objectLiteralToObjectMap } from './transform';
 
-export const getDecoratorName = (decorator: Decorator) => (isCallExpression(decorator.expression)
-  ? decorator.expression.expression.getText()
-  : '');
+export const getDecoratorName = (decorator: Decorator) =>
+  isCallExpression(decorator.expression)
+    ? decorator.expression.expression.getText()
+    : '';
 
-export const isDecoratorNamed = (
-  propName: string,
-) => (decorator: Decorator) => getDecoratorName(decorator) === propName;
+export const isDecoratorNamed = (propName: string) => (decorator: Decorator) =>
+  getDecoratorName(decorator) === propName;
 
-export const isDecoratedClassMember = (
-  member: ClassElement,
-) => Array.isArray(member.decorators) && member.decorators.length > 0;
+export const isDecoratedClassMember = (member: ClassElement) =>
+  Array.isArray(member.decorators) && member.decorators.length > 0;
 
 export const getDeclarationParameters: GetDeclarationParameters = (
   decorator: Decorator,
@@ -26,7 +29,8 @@ export const getDeclarationParameters: GetDeclarationParameters = (
 const getDeclarationParameter = (arg: Expression): any => {
   if (isObjectLiteralExpression(arg)) {
     return objectLiteralToObjectMap(arg);
-  } if (isStringLiteral(arg)) {
+  }
+  if (isStringLiteral(arg)) {
     return arg.text;
   }
 

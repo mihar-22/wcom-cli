@@ -1,13 +1,13 @@
-import { isNullOrUndefined } from './unit';
+import { isNil } from './unit';
 
 export function arrayFlat<T>(items: (T[] | T)[]): T[] {
-  if ('flat' in (items as any)) {
-    return (items as any).flat();
+  if ('flat' in items) {
+    return ((items as { flat(): void }).flat() as unknown) as T[];
   }
 
   const flattenArray: T[] = [];
-  for (const item of items) {
-    flattenArray.push(...(item as any));
+  for (const item of items as T[][]) {
+    flattenArray.push(...item);
   }
 
   return flattenArray;
@@ -21,11 +21,13 @@ export const arrayOnlyUnique = <T>(
 ): T[] => {
   const seen = new Set();
 
-  return items.filter((item) => {
-    const isUnique = (dontFilterNullOrUndefined && isNullOrUndefined(item[key]))
-      || !seen.has(item[key]);
+  return items.filter(item => {
+    const isUnique =
+      (dontFilterNullOrUndefined && isNil(item[key])) || !seen.has(item[key]);
 
-    if (!isUnique) { onDuplicateFound?.(item); }
+    if (!isUnique) {
+      onDuplicateFound?.(item);
+    }
 
     seen.add(item[key]);
 

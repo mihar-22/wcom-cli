@@ -9,7 +9,8 @@ export async function resolveCorePkgName(root: string) {
   return pkg?.packageJson.name;
 }
 
-export const resolvePath = (...pathSegments: string[]) => normalizePath(resolve(...pathSegments));
+export const resolvePath = (...pathSegments: string[]) =>
+  normalizePath(resolve(...pathSegments));
 
 export function resolveRelativePath(from: string, to: string) {
   const path = relative(dirname(from), to);
@@ -23,7 +24,7 @@ export async function resolveOutputPaths<T extends StringIndexableObject>(
 ): Promise<T> {
   const configWithResolvedPaths: T = { ...config };
 
-  keysOfObject(config).forEach((key) => {
+  keysOfObject(config).forEach(key => {
     if (!isUndefined(config[key]) && match(key)) {
       // TODO: how to resolve this type error?
       (configWithResolvedPaths as any)[key] = resolvePath(cwd, config[key]);
