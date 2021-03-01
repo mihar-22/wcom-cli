@@ -1,3 +1,4 @@
+import { dirname, resolve } from 'path';
 import {
   CallExpression,
   ClassDeclaration,
@@ -9,12 +10,11 @@ import {
   PropertyDeclaration,
   TypeChecker,
 } from 'typescript';
-import { resolve, dirname } from 'path';
+
 import { escapeQuotes } from '../../utils/string';
 import { ComponentMeta, DocTag } from '../ComponentMeta';
 import { Discoverer } from '../Discoverer';
 import { isDecoratedClassMember, isDecoratorNamed } from '../utils/decorators';
-import { getDocTags, isMemberPrivate } from '../utils/transform';
 import {
   buildEventMeta,
   buildMetaFromTags,
@@ -23,6 +23,7 @@ import {
   buildSlotMeta,
   getMemberName,
 } from '../utils/meta';
+import { getDocTags, hasDocTag, isMemberPrivate } from '../utils/transform';
 
 export interface LitPropOptions {
   attribute?: string;
@@ -52,11 +53,19 @@ export const LitDiscoverer: Discoverer = {
 
   isComponent(cls: ClassDeclaration) {
     if (!cls.decorators) return false;
-    const customElDecorator = cls.decorators.find(
+
+    const hasCustomElDecorator = cls.decorators.some(
       isDecoratorNamed('customElement'),
     );
-    if (!customElDecorator) return false;
-    return true;
+
+    const hasTagNameDocTag = hasDocTag(getDocTags(cls), 'tagname');
+
+    console.log(
+      cls.name?.escapedText,
+      hasCustomElDecorator || hasTagNameDocTag,
+    );
+
+    return hasCustomElDecorator || hasTagNameDocTag;
   },
 
   findTagName(cls: ClassDeclaration) {

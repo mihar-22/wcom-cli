@@ -1,7 +1,8 @@
-import { writeFile, ensureFile } from 'fs-extra';
-import { Transformer } from '../../Transformer';
-import { VsCodeTransformerConfig } from './VsCodeTransformerConfig';
+import { ensureFile, writeFile } from 'fs-extra';
+
+import { VsCodeTransformerConfig } from '../../../cli/commands/transform/TransformCommandConfig';
 import { escapeQuotes } from '../../../utils/string';
+import { Transformer } from '../../Transformer';
 
 export const VsCodeTransformer: Transformer<VsCodeTransformerConfig> = {
   async transform(components, config) {
@@ -13,7 +14,7 @@ export const VsCodeTransformer: Transformer<VsCodeTransformerConfig> = {
     };
 
     components.forEach(component => {
-      output.tags!.push({
+      output.tags?.push({
         name: component.tagName,
         description: component.documentation,
         attributes: component.props

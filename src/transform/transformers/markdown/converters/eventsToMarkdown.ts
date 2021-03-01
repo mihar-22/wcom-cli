@@ -1,13 +1,13 @@
 import { EventMeta } from '../../../../discover/ComponentMeta';
 import { MarkdownTable } from './markdownUtils';
 
-const getDescriptionColumn = (event: EventMeta) => {
+const getDescriptionColumn = (event: EventMeta): string => {
   const deprecatedText =
     '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
   return `${event.deprecated ? deprecatedText : ''}${event.documentation}`;
 };
 
-export const eventsToMarkdown = (events: EventMeta[]) => {
+export const eventsToMarkdown = (events: EventMeta[]): string[] => {
   const content: string[] = [];
 
   if (events.length === 0) return content;

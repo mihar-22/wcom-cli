@@ -1,12 +1,14 @@
-import { writeFile, ensureFile } from 'fs-extra';
+import { ensureFile, writeFile } from 'fs-extra';
+
+import { JsonTransformerConfig } from '../../../cli/commands/transform/TransformCommandConfig';
 import { deepFilterObjectKeys } from '../../../utils/object';
 import { Transformer } from '../../Transformer';
-import { JsonTransformerConfig } from './JsonTransformerConfig';
 
 export const JsonTransformer: Transformer<JsonTransformerConfig> = {
   async transform(components, config) {
     const { jsonOutFile } = config;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const output: any = {
       noOfComponents: components.length,
       components: [],

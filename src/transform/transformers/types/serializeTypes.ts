@@ -1,5 +1,6 @@
 import normalizePath from 'normalize-path';
 import { dirname, isAbsolute, relative } from 'path';
+
 import {
   ComponentMeta,
   EventMeta,
@@ -18,7 +19,7 @@ import { resolveAliasForComponentMember, TypeImport } from './TypeImport';
 export function serializeComponentsNamespace(
   components: ComponentMeta[],
   isDevMode: boolean,
-) {
+): string {
   return [
     'export namespace Components {',
     components.map(c => serializeInterface(c, isDevMode)).join('\n\n'),
@@ -26,7 +27,9 @@ export function serializeComponentsNamespace(
   ].join('\n');
 }
 
-export function serializeGlobalDeclaration(components: ComponentMeta[]) {
+export function serializeGlobalDeclaration(
+  components: ComponentMeta[],
+): string {
   return [
     'declare global {',
     components.map(c => serializeHTMLElement(c)).join('\n\n'),
@@ -41,7 +44,7 @@ export function serializeGlobalDeclaration(components: ComponentMeta[]) {
 export function serializeJSXModuleDeclaration(
   pkgName: string,
   components: ComponentMeta[],
-) {
+): string {
   return [
     `declare module "${pkgName}" {`,
     '  export namespace JSX {',
@@ -61,7 +64,7 @@ export function serializeJSXModuleDeclaration(
 export function serializeLocalJSXDeclaration(
   components: ComponentMeta[],
   isDevMode: boolean,
-) {
+): string {
   return [
     'declare namespace LocalJSX {',
     components.map(c => serializeJSX(c, isDevMode)).join('\n\n'),
@@ -77,7 +80,7 @@ export function serializeLocalJSXDeclaration(
   ].join('\n');
 }
 
-function serializeHTMLElementTagNameMap(components: ComponentMeta[]) {
+function serializeHTMLElementTagNameMap(components: ComponentMeta[]): string {
   const tags = components
     .map(c => `    "${c.tagName}": HTML${dashToPascalCase(c.tagName)}Element;`)
     .join('\n');
@@ -85,7 +88,7 @@ function serializeHTMLElementTagNameMap(components: ComponentMeta[]) {
   return ['  interface HTMLElementTagNameMap {', tags, '  }'].join('\n');
 }
 
-export function serializeHTMLEventMap(components: ComponentMeta[]) {
+export function serializeHTMLEventMap(components: ComponentMeta[]): string {
   const events = components
     .flatMap(component => component.events)
     .map(
@@ -99,13 +102,13 @@ export function serializeHTMLEventMap(components: ComponentMeta[]) {
 export function serializeInterface(
   component: ComponentMeta,
   isDevMode: boolean,
-) {
+): string {
   const name = dashToPascalCase(component.tagName);
   const members = serializeComponentMembers(component, false, isDevMode);
   return `  interface ${name} {\n${members}  }`;
 }
 
-export function serializeHTMLElement(component: ComponentMeta) {
+export function serializeHTMLElement(component: ComponentMeta): string {
   const name = dashToPascalCase(component.tagName);
   const htmlElementName = `HTML${name}Element`;
   return [
@@ -117,7 +120,10 @@ export function serializeHTMLElement(component: ComponentMeta) {
   ].join('\n');
 }
 
-export function serializeJSX(component: ComponentMeta, isDevMode: boolean) {
+export function serializeJSX(
+  component: ComponentMeta,
+  isDevMode: boolean,
+): string {
   const name = dashToPascalCase(component.tagName);
   const members = serializeComponentMembers(component, true, isDevMode);
   return `  interface ${name} {\n${members}  }`;
@@ -126,7 +132,7 @@ export function serializeJSX(component: ComponentMeta, isDevMode: boolean) {
 export function serializeTypeImports(
   targetPath: string,
   typeImports: TypeImport[],
-) {
+): string {
   const typeImportsGroupedByFilePath = typeImports.reduce(
     (prevImports, typeImport) => ({
       ...prevImports,
@@ -161,7 +167,7 @@ function serializeComponentMembers(
   component: ComponentMeta,
   isJSX: boolean,
   isDevMode: boolean,
-) {
+): string {
   const members = (isJSX
     ? [...component.props, ...component.events]
     : [...component.props, ...component.methods]) as (

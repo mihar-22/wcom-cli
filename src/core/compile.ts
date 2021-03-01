@@ -17,6 +17,7 @@ import {
   SourceFile,
   sys,
 } from 'typescript';
+
 import { isUndefined } from '../utils/unit';
 import { log, LogLevel, reportDiagnosticByLine } from './log';
 
@@ -67,7 +68,7 @@ export interface CompileResult {
 export function compileOnce(
   filePaths: string[],
   options: CompilerOptions = defaultOptions,
-) {
+): Program {
   return createProgram(filePaths, options);
 }
 
@@ -99,6 +100,7 @@ function reportWatchStatusChanged(diagnostic: Diagnostic) {
   log(`[${yellow(diagnostic.code)}] ${diagnostic.messageText}`, LogLevel.Info);
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function compileAndWatch(
   root: string,
   configFileName: string,

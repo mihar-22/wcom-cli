@@ -1,33 +1,36 @@
 import { isArray, isObject } from './unit';
 
-export type StringIndexableObject = {
-  [key: string]: any;
-};
-
 export type CompositeObject<T, R> = T & R;
 
-export const keysOfObject = <T>(obj: T) => Object.keys(obj) as Array<keyof T>;
+export const keysOfObject = <T>(obj: T): (keyof T)[] =>
+  Object.keys(obj) as (keyof T)[];
 
+// TODO: Types here are kind of messed up.
 export const deepFilterObjectKeys = <
-  T extends StringIndexableObject,
+  T extends Record<string, unknown>,
   R extends string
 >(
   obj: T,
   omitKeys: Set<R>,
 ): Omit<T, R> => {
-  const filteredObj: any = {};
+  const filteredObj = {} as Omit<T, R> & Record<string, unknown>;
 
   if (isObject(obj)) {
     keysOfObject(obj).forEach(key => {
-      const value: any = obj[key];
-      if (!omitKeys.has(key as any)) {
-        filteredObj[key] = deepFilterObjectKeys(value, omitKeys);
+      const value: unknown = obj[key];
+
+      if (!omitKeys.has(key as R)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (filteredObj as any)[key] = deepFilterObjectKeys(
+          value as Record<string, unknown>,
+          omitKeys,
+        );
       }
     });
   } else if (isArray(obj)) {
-    return (obj as any[]).map(val =>
-      deepFilterObjectKeys(val, omitKeys),
-    ) as any;
+    return (obj as (keyof T)[]).map(value =>
+      deepFilterObjectKeys(value as never, omitKeys),
+    ) as never;
   } else {
     return obj;
   }
@@ -35,13 +38,10 @@ export const deepFilterObjectKeys = <
   return filteredObj;
 };
 
-export const objectHasProperty = <T>(obj: T, prop: keyof T) =>
+export const objectHasProperty = <T>(obj: T, prop: keyof T): prop is keyof T =>
   Object.prototype.hasOwnProperty.call(obj, prop);
 
-export const sortObjectsBy = <T extends StringIndexableObject>(
-  objects: T[],
-  sortKey: keyof T,
-) =>
+export const sortObjectsBy = <T>(objects: T[], sortKey: keyof T): T[] =>
   objects.sort((a, b) => {
     if (a[sortKey] === b[sortKey]) return 0;
     return a[sortKey] < b[sortKey] ? -1 : 1;

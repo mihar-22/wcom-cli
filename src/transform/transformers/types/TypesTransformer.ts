@@ -1,6 +1,8 @@
-import { writeFile, ensureFile, pathExists } from 'fs-extra';
+import { ensureFile, pathExists, writeFile } from 'fs-extra';
 import normalizePath from 'normalize-path';
 import { dirname, resolve } from 'path';
+
+import { TypesTransformerConfig } from '../../../cli/commands/transform/TransformCommandConfig';
 import { Transformer } from '../../Transformer';
 import { jsxTypes } from './jsx';
 import {
@@ -11,7 +13,6 @@ import {
   serializeTypeImports,
 } from './serializeTypes';
 import { clearTypeImportInfo, findTypeImports } from './TypeImport';
-import { TypesTransformerConfig } from './TypesTransformerConfig';
 
 export const TypesTransformer: Transformer<TypesTransformerConfig> = {
   async transform(components, config) {

@@ -12,15 +12,11 @@
     "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "lib": ["dom", "es2017"],
-    "moduleResolution": "node",
+    "lib": ["DOM", "ES2017"],
+    "moduleResolution": "Node",
     "module": "ESNext",
-    "target": "ESNext",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "dist"
+    "target": "ESNext"
   },
-  "include": ["src"],
-  "exclude": ["node_modules/", "src/tests/"]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules/**", "dist/**"]
 }

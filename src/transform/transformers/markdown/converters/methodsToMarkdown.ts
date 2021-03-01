@@ -1,18 +1,18 @@
 import { MethodMeta } from '../../../../discover/ComponentMeta';
 import { MarkdownTable } from './markdownUtils';
 
-const getNameColumn = (method: MethodMeta) => `\`${method.name}\``;
+const getNameColumn = (method: MethodMeta): string => `\`${method.name}\``;
 
-const getDescriptionColumn = (method: MethodMeta) => {
+const getDescriptionColumn = (method: MethodMeta): string => {
   const deprecatedText =
     '<span style="color:red">**[DEPRECATED]**</span><br/><br/>';
   return `${method.deprecated ? deprecatedText : ''}${method.documentation}`;
 };
 
-const getSignatureColumn = (method: MethodMeta) =>
+const getSignatureColumn = (method: MethodMeta): string =>
   `\`${method.typeInfo.signatureText}\``;
 
-export const methodsToMarkdown = (methods: MethodMeta[]) => {
+export const methodsToMarkdown = (methods: MethodMeta[]): string[] => {
   const content: string[] = [];
 
   if (methods.length === 0) return content;

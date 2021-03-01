@@ -1,4 +1,5 @@
 import { dirname, resolve } from 'path';
+
 import {
   ComponentMeta,
   MethodTypeInfo,
@@ -25,7 +26,7 @@ export interface TypeImport {
 export function resolveTypeImportPath(
   type: TypeReference,
   sourceFilePath: string,
-) {
+): string {
   const importPath = type.location === 'local' ? sourceFilePath : type.path!;
   // If this is a relative path make it absolute.
   return importPath.startsWith('.')
@@ -33,13 +34,13 @@ export function resolveTypeImportPath(
     : importPath;
 }
 
-export function clearTypeImportInfo() {
+export function clearTypeImportInfo(): void {
   globalTypeImportCount.clear();
   componentTypeImports.clear();
   seenTypes.clear();
 }
 
-export function aliasTypeName(typeImport: TypeImport) {
+export function aliasTypeName(typeImport: TypeImport): string | undefined {
   const count = globalTypeImportCount.get(typeImport.name);
 
   if (isUndefined(count)) {
@@ -88,7 +89,7 @@ export function findTypeImports(component: ComponentMeta): TypeImport[] {
 export function resolveAliasForComponentMember(
   component: ComponentMeta,
   typeInfo: PropTypeInfo | MethodTypeInfo,
-) {
+): string {
   let type =
     (typeInfo as PropTypeInfo).original ??
     (typeInfo as MethodTypeInfo).signatureText;

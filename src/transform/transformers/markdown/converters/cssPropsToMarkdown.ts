@@ -1,7 +1,7 @@
-import { MarkdownTable } from './markdownUtils';
 import { CssPropMeta } from '../../../../discover/ComponentMeta';
+import { MarkdownTable } from './markdownUtils';
 
-export const cssPropsToMarkdown = (cssProps: CssPropMeta[]) => {
+export const cssPropsToMarkdown = (cssProps: CssPropMeta[]): string[] => {
   const content: string[] = [];
 
   if (cssProps.length === 0) return content;

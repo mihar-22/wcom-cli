@@ -111,11 +111,11 @@ interface RowData {
 export class MarkdownTable {
   private rows: RowData[] = [];
 
-  addHeader(data: string[]) {
+  addHeader(data: string[]): void {
     this.addRow(data, true);
   }
 
-  addRow(data: string[], isHeader = false) {
+  addRow(data: string[], isHeader = false): void {
     const columns: ColumnData[] = [];
 
     data.forEach(text => {
@@ -132,7 +132,7 @@ export class MarkdownTable {
     });
   }
 
-  toMarkdown() {
+  toMarkdown(): string[] {
     return createTable(this.rows);
   }
 }

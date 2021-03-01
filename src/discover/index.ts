@@ -2,13 +2,15 @@ import { bold } from 'kleur';
 import normalizePath from 'normalize-path';
 import { basename, parse } from 'path';
 import {
+  ClassDeclaration,
   forEachChild,
+  Identifier,
+  isClassDeclaration,
   Program,
   SourceFile,
   TypeChecker,
-  ClassDeclaration,
-  isClassDeclaration,
 } from 'typescript';
+
 import { log, LogLevel, logStackTrace, logWithTime } from '../core/log';
 import { sortObjectsBy } from '../utils/object';
 import { isUndefined } from '../utils/unit';
@@ -26,7 +28,7 @@ export function discoverComponent(
   checker: TypeChecker,
   sourceFile: SourceFile,
   discovererId: DiscovererId,
-) {
+): ComponentMeta | undefined {
   const discoverer = discoveryMap[discovererId];
 
   return forEachChild(sourceFile, node => {
@@ -78,6 +80,7 @@ export function discover(
     startTime,
     LogLevel.Verbose,
   );
+
   return sortedComponents;
 }
 
@@ -90,6 +93,7 @@ function buildMeta(
   const sourceFile = cls.getSourceFile();
   const sourceFilePath = normalizePath(sourceFile.fileName);
   const sourceFileInfo = parse(sourceFilePath);
+  const identifier = cls.name as Identifier;
   meta.source = {
     file: sourceFile,
     fileBase: sourceFileInfo.base,
@@ -100,9 +104,9 @@ function buildMeta(
     dirPath: sourceFileInfo.dir,
   };
   meta.declaration = cls;
-  meta.symbol = checker.getSymbolAtLocation(cls.name!);
-  meta.documentation = getDocumentation(checker, cls.name!);
-  meta.className = cls.name!.escapedText as string;
+  meta.symbol = checker.getSymbolAtLocation(identifier);
+  meta.documentation = getDocumentation(checker, identifier);
+  meta.className = identifier.escapedText as string;
   meta.props = discoverer.findProps(checker, cls);
   meta.methods = discoverer.findMethods(checker, cls);
   meta.events = discoverer.findEvents(checker, cls);

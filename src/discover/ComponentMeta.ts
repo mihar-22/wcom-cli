@@ -1,14 +1,14 @@
 import {
+  ClassDeclaration,
+  Decorator,
+  GetAccessorDeclaration,
+  MethodDeclaration,
+  Node,
+  PropertyDeclaration,
+  Signature,
   SourceFile,
   Symbol,
-  PropertyDeclaration,
-  MethodDeclaration,
-  ClassDeclaration,
   Type,
-  Decorator,
-  Node,
-  Signature,
-  GetAccessorDeclaration,
 } from 'typescript';
 
 export type TypeText = 'any' | 'string' | 'number' | 'boolean' | 'unknown';
@@ -29,7 +29,8 @@ export interface PropTypeInfo {
 }
 
 export interface PropMeta {
-  symbol: symbol;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  symbol: Symbol;
   type: Type;
   declaration: PropertyDeclaration | GetAccessorDeclaration;
   decorator: Decorator;
@@ -57,7 +58,8 @@ export interface MethodTypeInfo {
 }
 
 export interface MethodMeta {
-  symbol: symbol;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  symbol: Symbol;
   declaration: MethodDeclaration;
   name: string;
   typeInfo: MethodTypeInfo;
@@ -70,7 +72,8 @@ export interface MethodMeta {
 }
 
 export interface EventMeta {
-  symbol: symbol;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  symbol: Symbol;
   declaration: PropertyDeclaration;
   decorator: Decorator;
   type: Type;
@@ -122,7 +125,8 @@ export interface Source {
 export interface ComponentMeta {
   tagName: string;
   documentation?: string;
-  symbol: symbol;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  symbol: Symbol;
   declaration: ClassDeclaration;
   source: Source;
   className: string;

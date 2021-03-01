@@ -1,11 +1,12 @@
 import { ClassElement } from 'typescript';
+
 import { LogLevel, reportDiagnosticByNode } from '../core/log';
 
 export const validatePublicName = (
   propName: string,
   memberType: 'property' | 'method' | 'event',
   element: ClassElement,
-) => {
+): void => {
   if (RESERVED_PUBLIC_MEMBERS.has(propName.toLowerCase())) {
     reportDiagnosticByNode(
       [

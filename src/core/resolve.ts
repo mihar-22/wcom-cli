@@ -1,23 +1,26 @@
+import normalizePath from 'normalize-path';
 import { dirname, relative, resolve } from 'path';
 import readPkgUp from 'read-pkg-up';
-import normalizePath from 'normalize-path';
-import { isUndefined } from '../utils/unit';
-import { keysOfObject, StringIndexableObject } from '../utils/object';
 
-export async function resolveCorePkgName(root: string) {
+import { keysOfObject } from '../utils/object';
+import { isUndefined } from '../utils/unit';
+
+export async function resolveCorePkgName(
+  root: string,
+): Promise<string | undefined> {
   const pkg = await readPkgUp({ cwd: root });
   return pkg?.packageJson.name;
 }
 
-export const resolvePath = (...pathSegments: string[]) =>
+export const resolvePath = (...pathSegments: string[]): string =>
   normalizePath(resolve(...pathSegments));
 
-export function resolveRelativePath(from: string, to: string) {
+export function resolveRelativePath(from: string, to: string): string {
   const path = relative(dirname(from), to);
   return path.startsWith('.') ? path : `./${path}`;
 }
 
-export async function resolveOutputPaths<T extends StringIndexableObject>(
+export async function resolveOutputPaths<T extends Record<string, unknown>>(
   cwd: string,
   config: T,
   match: (key: keyof T) => boolean,
@@ -26,8 +29,10 @@ export async function resolveOutputPaths<T extends StringIndexableObject>(
 
   keysOfObject(config).forEach(key => {
     if (!isUndefined(config[key]) && match(key)) {
-      // TODO: how to resolve this type error?
-      (configWithResolvedPaths as any)[key] = resolvePath(cwd, config[key]);
+      configWithResolvedPaths[key] = resolvePath(
+        cwd,
+        config[key] as string,
+      ) as T[keyof T];
     }
   });
 

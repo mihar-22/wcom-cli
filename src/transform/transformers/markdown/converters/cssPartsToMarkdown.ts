@@ -1,7 +1,7 @@
 import { CssPartMeta } from '../../../../discover/ComponentMeta';
 import { MarkdownTable } from './markdownUtils';
 
-export const cssPartsToMarkdown = (cssParts: CssPartMeta[]) => {
+export const cssPartsToMarkdown = (cssParts: CssPartMeta[]): string[] => {
   const content: string[] = [];
 
   if (cssParts.length === 0) return content;

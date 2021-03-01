@@ -1,6 +1,7 @@
 /* eslint-disable no-bitwise */
 import { dim } from 'kleur';
-import { SymbolFlags, TypeChecker } from 'typescript';
+import { Decorator, Symbol, SymbolFlags, TypeChecker } from 'typescript';
+
 import { log, LogLevel, reportDiagnosticByNode } from '../core/log';
 import { arrayOnlyUnique } from '../utils/array';
 import { isUndefined } from '../utils/unit';
@@ -11,20 +12,23 @@ export function validateComponent(
   checker: TypeChecker,
   component: ComponentMeta,
   customElementDecoratorName: string,
-) {
+): void {
   const tagError = validateComponentTag(component.tagName);
   if (!isUndefined(tagError)) {
     reportDiagnosticByNode(
       tagError,
-      component.declaration.decorators!.find(
+      component.declaration.decorators?.find(
         isDecoratorNamed(customElementDecoratorName),
-      )!,
+      ) as Decorator,
       LogLevel.Error,
     );
   }
 
   const nonTypeExports = checker
-    .getExportsOfModule(checker.getSymbolAtLocation(component.source.file)!)
+    .getExportsOfModule(
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      checker.getSymbolAtLocation(component.source.file) as Symbol,
+    )
     .filter(
       symb =>
         (symb.flags & (SymbolFlags.Interface | SymbolFlags.TypeAlias)) === 0,
@@ -46,7 +50,7 @@ export function validateComponent(
   });
 }
 
-export function validateUniqueTagNames(components: ComponentMeta[]) {
+export function validateUniqueTagNames(components: ComponentMeta[]): void {
   arrayOnlyUnique(components, 'tagName').forEach(component => {
     const { tagName } = component;
     const usedBy = components.filter(c => c.tagName === tagName);
@@ -65,7 +69,7 @@ export function validateUniqueTagNames(components: ComponentMeta[]) {
   });
 }
 
-export const validateComponentTag = (tag: string) => {
+export const validateComponentTag = (tag: string): string | undefined => {
   if (tag !== tag.trim()) {
     return 'Tag can not contain white spaces.';
   }

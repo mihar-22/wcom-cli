@@ -1,8 +1,9 @@
 import { bold } from 'kleur';
+
 import { TransformCommandConfig } from '../cli/commands/transform/TransformCommandConfig';
 import { log, LogLevel, logWithTime } from '../core/log';
 import { ComponentMeta } from '../discover/ComponentMeta';
-import { TransformerId, Transformer } from './Transformer';
+import { Transformer, TransformerId } from './Transformer';
 import { ExportsTransformer } from './transformers/exports/ExportsTransformer';
 import { JsonTransformer } from './transformers/json/JsonTransformer';
 import { MarkdownTransformer } from './transformers/markdown/MarkdownTransformer';
@@ -38,13 +39,13 @@ export async function transform(
   if (transformerId === TransformerId.ALL) {
     await Promise.all(
       AllTransformers.map(transformer =>
-        transformer!.transform(components, config),
+        transformer?.transform(components, config),
       ),
     );
     return;
   }
 
-  await TransformerMap[transformerId]!.transform(components, config);
+  await TransformerMap[transformerId]?.transform(components, config);
   logWithTime(
     `Finished ${bold(transformerId)} transformation`,
     startTime,

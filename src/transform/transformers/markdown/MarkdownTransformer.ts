@@ -1,5 +1,7 @@
+import { ensureFile, pathExists, readFile, writeFile } from 'fs-extra';
 import { relative, resolve } from 'path';
-import { readFile, pathExists, ensureFile, writeFile } from 'fs-extra';
+
+import { MarkdownTransformerConfig } from '../../../cli/commands/transform/TransformCommandConfig';
 import { ComponentMeta } from '../../../discover/ComponentMeta';
 import { Transformer } from '../../Transformer';
 import { cssPartsToMarkdown } from './converters/cssPartsToMarkdown';
@@ -9,7 +11,6 @@ import { eventsToMarkdown } from './converters/eventsToMarkdown';
 import { methodsToMarkdown } from './converters/methodsToMarkdown';
 import { propsToMarkdown } from './converters/propsToMarkdown';
 import { slotsToMarkdown } from './converters/slotsToMarkdown';
-import { MarkdownTransformerConfig } from './MarkdownTransformerConfig';
 
 export const MarkdownTransformer: Transformer<MarkdownTransformerConfig> = {
   async transform(components, config) {

@@ -1,17 +1,13 @@
 import { DiscovererId } from '../../../discover/Discoverer';
 import { TransformerId } from '../../../transform/Transformer';
-import { ExportsTransformerConfig } from '../../../transform/transformers/exports/ExportsTransformerConfig';
-import { JsonTransformerConfig } from '../../../transform/transformers/json/JsonTransformerConfig';
-import { MarkdownTransformerConfig } from '../../../transform/transformers/markdown/MarkdownTransformerConfig';
-import { TypesTransformerConfig } from '../../../transform/transformers/types/TypesTransformerConfig';
-import { VsCodeTransformerConfig } from '../../../transform/transformers/vscode/VsCodeTransformerConfig';
 
 export interface TransformCommandConfig
   extends JsonTransformerConfig,
     MarkdownTransformerConfig,
     TypesTransformerConfig,
     VsCodeTransformerConfig,
-    ExportsTransformerConfig {
+    ExportsTransformerConfig,
+    Record<string, unknown> {
   pkgName: string;
   discovery: DiscovererId;
   transformers: TransformerId[];
@@ -22,4 +18,29 @@ export interface TransformCommandConfig
   cwd: string;
   // watch: boolean;
   // project: string;
+}
+
+export interface JsonTransformerConfig {
+  jsonOutFile: string;
+}
+
+export interface MarkdownTransformerConfig {
+  componentsRootDir: string;
+  markdownOutDir: string;
+  noMarkdownIndex: boolean;
+  markdownIndexOutFile: string;
+}
+
+export interface TypesTransformerConfig {
+  pkgName: string;
+  watch: boolean;
+  typesOutFile: string;
+}
+
+export interface VsCodeTransformerConfig {
+  vscodeOutFile: string;
+}
+
+export interface ExportsTransformerConfig {
+  exportsOutFile: string;
 }

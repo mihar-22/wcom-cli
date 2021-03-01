@@ -1,8 +1,9 @@
-import { writeFile, ensureFile } from 'fs-extra';
+import { ensureFile, writeFile } from 'fs-extra';
+
+import { ExportsTransformerConfig } from '../../../cli/commands/transform/TransformCommandConfig';
 import { resolveRelativePath } from '../../../core/resolve';
 import { dashToPascalCase } from '../../../utils/string';
 import { Transformer } from '../../Transformer';
-import { ExportsTransformerConfig } from './ExportsTransformerConfig';
 
 export const ExportsTransformer: Transformer<ExportsTransformerConfig> = {
   async transform(components, config) {

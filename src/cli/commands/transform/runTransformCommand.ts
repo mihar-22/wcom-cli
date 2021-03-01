@@ -1,17 +1,18 @@
-import { Program } from 'typescript';
 import { green } from 'kleur';
-import { discover } from '../../../discover';
-import { transform } from '../../../transform';
-import { parseGlobs } from '../../../core/globs';
+import { Program } from 'typescript';
+
 import { compileOnce } from '../../../core/compile';
+import { parseGlobs } from '../../../core/globs';
 import { clearTerminal, log, LogLevel, logWithTime } from '../../../core/log';
-import { TransformCommandConfig } from './TransformCommandConfig';
 import {
   resolveCorePkgName,
   resolveOutputPaths,
   resolvePath,
 } from '../../../core/resolve';
-import { isUndefined } from '../../../utils/unit';
+import { discover } from '../../../discover';
+import { transform } from '../../../transform';
+import { isString, isUndefined } from '../../../utils/unit';
+import { TransformCommandConfig } from './TransformCommandConfig';
 
 async function normalizeConfig(config: TransformCommandConfig) {
   const rootPath = isUndefined(config.cwd)
@@ -21,7 +22,7 @@ async function normalizeConfig(config: TransformCommandConfig) {
   const configWithResolvedPaths = await resolveOutputPaths(
     rootPath,
     config,
-    key => key.endsWith('File') || key.endsWith('Dir'),
+    key => isString(key) && (key.endsWith('File') || key.endsWith('Dir')),
   );
 
   configWithResolvedPaths.cwd = rootPath;
@@ -31,7 +32,7 @@ async function normalizeConfig(config: TransformCommandConfig) {
 
 export async function runTransformCommand(
   transformConfig: TransformCommandConfig,
-) {
+): Promise<void> {
   clearTerminal();
 
   const config = await normalizeConfig(transformConfig);
@@ -49,7 +50,7 @@ export async function run(
   glob: string[],
   config: TransformCommandConfig,
   paths?: string[],
-) {
+): Promise<void> {
   const startTime = process.hrtime();
   const validFilePaths = new Set(paths ?? (await parseGlobs(glob)));
 

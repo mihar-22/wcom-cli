@@ -1,17 +1,18 @@
 import { dirname, relative } from 'path';
+
 import { ComponentMeta } from '../../../../discover/ComponentMeta';
 
 const getDependencyLink = (
   component: ComponentMeta,
   depTagName: string,
   components: ComponentMeta[],
-) => {
+): string => {
   const dependency = components.find(c => c.tagName === depTagName);
 
   if (dependency) {
     const relativePathToDependency = relative(
       dirname(component.source.filePath),
-      dirname(dependency.source.filePath)!,
+      dirname(dependency.source.filePath),
     ).replace('../', './');
 
     return `[${depTagName}](${relativePathToDependency})`;
@@ -23,7 +24,7 @@ const getDependencyLink = (
 export const depsToMarkdown = (
   component: ComponentMeta,
   components: ComponentMeta[],
-) => {
+): string[] => {
   const content: string[] = [];
   const hasDependents = component.dependents.length > 0;
   const hasDependencies = component.dependencies.length > 0;

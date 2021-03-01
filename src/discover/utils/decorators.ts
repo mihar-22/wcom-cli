@@ -6,30 +6,34 @@ import {
   isObjectLiteralExpression,
   isStringLiteral,
 } from 'typescript';
-import { objectLiteralToObjectMap } from './transform';
 
-export const getDecoratorName = (decorator: Decorator) =>
+import { objectLiteralToObjectMap, ObjectMap } from './transform';
+
+export const getDecoratorName = (decorator: Decorator): string =>
   isCallExpression(decorator.expression)
     ? decorator.expression.expression.getText()
     : '';
 
-export const isDecoratorNamed = (propName: string) => (decorator: Decorator) =>
-  getDecoratorName(decorator) === propName;
+export const isDecoratorNamed = (propName: string) => (
+  decorator: Decorator,
+): boolean => getDecoratorName(decorator) === propName;
 
-export const isDecoratedClassMember = (member: ClassElement) =>
+export const isDecoratedClassMember = (member: ClassElement): boolean =>
   Array.isArray(member.decorators) && member.decorators.length > 0;
 
 export const getDeclarationParameters: GetDeclarationParameters = (
   decorator: Decorator,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any => {
   if (!isCallExpression(decorator.expression)) return [];
   return decorator.expression.arguments.map(getDeclarationParameter);
 };
 
-const getDeclarationParameter = (arg: Expression): any => {
+const getDeclarationParameter = (arg: Expression): string | ObjectMap => {
   if (isObjectLiteralExpression(arg)) {
     return objectLiteralToObjectMap(arg);
   }
+
   if (isStringLiteral(arg)) {
     return arg.text;
   }

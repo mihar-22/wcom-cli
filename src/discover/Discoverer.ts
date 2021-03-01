@@ -1,4 +1,5 @@
 import { ClassDeclaration, TypeChecker } from 'typescript';
+
 import {
   ComponentMeta,
   CssPartMeta,

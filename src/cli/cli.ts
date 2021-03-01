@@ -1,14 +1,15 @@
 import yargs from 'yargs';
-import { isCLIError } from './cli-error';
-import { runTransformCommand } from './commands/transform/runTransformCommand';
-import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
+
 import {
   logStackTrace,
   mapLogLevelStringToNumber,
   setGlobalLogLevel,
 } from '../core/log';
+import { isCLIError } from './cli-error';
+import { runTransformCommand } from './commands/transform/runTransformCommand';
+import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
 
-export function cli() {
+export function cli(): void {
   yargs
     .usage('Usage: $0 <command> [glob..] [options]')
     .command<TransformCommandConfig>({

@@ -1,7 +1,7 @@
 import { SlotMeta } from '../../../../discover/ComponentMeta';
 import { MarkdownTable } from './markdownUtils';
 
-export const slotsToMarkdown = (slots: SlotMeta[]) => {
+export const slotsToMarkdown = (slots: SlotMeta[]): string[] => {
   const content: string[] = [];
 
   if (slots.length === 0) return content;

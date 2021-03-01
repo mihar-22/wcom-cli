@@ -1,68 +1,75 @@
 /* eslint-disable no-bitwise, no-case-declarations */
-
 import {
   ArrayLiteralExpression,
+  ClassElement,
   ComputedPropertyName,
+  displayPartsToString,
+  EntityName,
   Expression,
+  forEachChild,
   Identifier,
+  ImportDeclaration,
+  isExportDeclaration,
+  isIdentifier,
+  isImportClause,
+  isImportDeclaration,
+  isInterfaceDeclaration,
+  isNamedExports,
+  isNamedImports,
   isNumericLiteral,
   isPropertyAssignment,
   isShorthandPropertyAssignment,
   isStringLiteral,
+  isTypeAliasDeclaration,
+  isTypeReferenceNode,
   LiteralExpression,
+  NamedExportBindings,
+  NamedExports,
+  Node,
   ObjectLiteralExpression,
   PropertyName,
+  SourceFile,
   StringLiteral,
   SyntaxKind,
-  ClassElement,
-  TypeFormatFlags,
-  TypeChecker,
   Type,
+  TypeChecker,
+  TypeFormatFlags,
+  TypeReferenceNode,
   UnionType,
   VisitResult,
-  isTypeReferenceNode,
-  TypeReferenceNode,
-  forEachChild,
-  isIdentifier,
-  isNamedExports,
-  isExportDeclaration,
-  isInterfaceDeclaration,
-  isTypeAliasDeclaration,
-  ImportDeclaration,
-  isImportClause,
-  isNamedImports,
-  isImportDeclaration,
-  Node,
-  EntityName,
-  displayPartsToString,
-  SourceFile,
 } from 'typescript';
+
 import { normalizeLineBreaks } from '../../utils/string';
 import { DocTag, TypeReference, TypeReferences } from '../ComponentMeta';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const splitJsDocTagText = (tag: DocTag) => {
   const [title, description] = (tag.text?.split(':') ?? []).map(s => s.trim());
   return { title, description, node: tag.node };
 };
 
 export const getDocTags = (node: Node): DocTag[] =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ((node as any).jsDoc?.[0]?.tags ?? []).map((docTagNode: any) => ({
     node: docTagNode,
     name: docTagNode.tagName.escapedText,
     text: docTagNode.comment,
   }));
 
-export const hasDocTag = (tags: DocTag[], name: string) =>
+export const hasDocTag = (tags: DocTag[], name: string): boolean =>
   tags.some(tag => tag.name === name);
 
-export const getDocumentation = (checker: TypeChecker, id: Identifier) => {
+export const getDocumentation = (
+  checker: TypeChecker,
+  id: Identifier,
+): string => {
   const comment = checker
     .getSymbolAtLocation(id)
     ?.getDocumentationComment(checker);
   return normalizeLineBreaks(displayPartsToString(comment) ?? '');
 };
 
-export const resolveType = (checker: TypeChecker, type: Type) => {
+export const resolveType = (checker: TypeChecker, type: Type): string => {
   const set = new Set<string>();
   parseDocsType(checker, type, set);
 
@@ -91,7 +98,7 @@ export const parseDocsType = (
   checker: TypeChecker,
   type: Type,
   parts: Set<string>,
-) => {
+): void => {
   if (type.isUnion()) {
     (type as UnionType).types.forEach(t => {
       parseDocsType(checker, t, parts);
@@ -102,7 +109,7 @@ export const parseDocsType = (
   }
 };
 
-export const typeToString = (checker: TypeChecker, type: Type) => {
+export const typeToString = (checker: TypeChecker, type: Type): string => {
   const TYPE_FORMAT_FLAGS =
     TypeFormatFlags.NoTruncation |
     TypeFormatFlags.InTypeAlias |
@@ -111,15 +118,15 @@ export const typeToString = (checker: TypeChecker, type: Type) => {
   return checker.typeToString(type, undefined, TYPE_FORMAT_FLAGS);
 };
 
-export const isMemberPrivate = (member: ClassElement) =>
-  member.modifiers &&
+export const isMemberPrivate = (member: ClassElement): boolean =>
+  !!member.modifiers &&
   member.modifiers.some(
     m =>
       m.kind === SyntaxKind.PrivateKeyword ||
       m.kind === SyntaxKind.ProtectedKeyword,
   );
 
-const getTextOfPropertyName = (propName: PropertyName) => {
+const getTextOfPropertyName = (propName: PropertyName): string | undefined => {
   switch (propName.kind) {
     case SyntaxKind.Identifier:
       return (<Identifier>propName).text;
@@ -137,7 +144,10 @@ const getTextOfPropertyName = (propName: PropertyName) => {
   return undefined;
 };
 
-export const getTypeReferences = (node: Node, sourceFile?: SourceFile) => {
+export const getTypeReferences = (
+  node: Node,
+  sourceFile?: SourceFile,
+): TypeReferences => {
   const allReferences: TypeReferences = {};
 
   getAllTypeReferences(node).forEach(typeRef => {
@@ -158,7 +168,7 @@ const getEntityName = (entity: EntityName): string => {
   return getEntityName(entity.left);
 };
 
-const getAllTypeReferences = (rootNode: Node) => {
+const getAllTypeReferences = (rootNode: Node): string[] => {
   const referencedTypes: string[] = [];
 
   const visit = (node: Node): VisitResult<Node> => {
@@ -223,7 +233,7 @@ const getTypeReferenceLocation = (
    * 'local' reference location
    */
   const isExported = sourceFile.statements.some(st => {
-    // Is the interface defined in the file and exported.
+    // Is the interface defined in the file and exported?
     const isInterfaceDeclarationExported =
       isInterfaceDeclaration(st) &&
       (<Identifier>st.name).getText() === typeName &&
@@ -236,11 +246,14 @@ const getTypeReferenceLocation = (
       Array.isArray(st.modifiers) &&
       st.modifiers.some(mod => mod.kind === SyntaxKind.ExportKeyword);
 
-    // Is the interface exported through a named export.
+    // Is the interface exported through a named export?
     const isTypeInExportDeclaration =
       isExportDeclaration(st) &&
-      isNamedExports(st.exportClause!) &&
-      st.exportClause.elements.some(nee => nee.name.getText() === typeName);
+      isNamedExports(st.exportClause as NamedExportBindings) &&
+      ((st.exportClause as NamedExports)?.elements.some(
+        nee => nee.name.getText() === typeName,
+      ) ??
+        false);
 
     return (
       isInterfaceDeclarationExported ||
@@ -260,18 +273,16 @@ const getTypeReferenceLocation = (
   return { location: 'global' };
 };
 
-const getIdentifierValue = (escapedText: any) => {
-  const identifier: ConvertIdentifier = {
+const getIdentifierValue = (escapedText: string): ConvertIdentifier => {
+  return {
     __identifier: true,
     __escapedText: escapedText,
   };
-
-  return identifier;
 };
 
-export const arrayLiteralToArray = (arr: ArrayLiteralExpression) =>
+export const arrayLiteralToArray = (arr: ArrayLiteralExpression): unknown[] =>
   arr.elements.map(element => {
-    let val: any;
+    let val: unknown;
 
     switch (element.kind) {
       case SyntaxKind.ObjectLiteralExpression:
@@ -311,15 +322,16 @@ export const arrayLiteralToArray = (arr: ArrayLiteralExpression) =>
 
 export const objectLiteralToObjectMap = (
   objectLiteral: ObjectLiteralExpression,
-) => {
+): ObjectMap => {
   const { properties } = objectLiteral;
   const final: ObjectMap = {};
 
   for (const propAssignment of properties) {
-    let val: any;
+    let val: unknown;
+
     const propName = getTextOfPropertyName(
       propAssignment.name as PropertyName,
-    )!;
+    ) as string;
 
     if (isShorthandPropertyAssignment(propAssignment)) {
       val = getIdentifierValue(propName);
@@ -355,6 +367,7 @@ export const objectLiteralToObjectMap = (
 
         case SyntaxKind.Identifier:
           const { escapedText } = propAssignment.initializer as Identifier;
+
           if (escapedText === 'String') {
             val = String;
           } else if (escapedText === 'Number') {
@@ -367,7 +380,7 @@ export const objectLiteralToObjectMap = (
             val = null;
           } else {
             val = getIdentifierValue(
-              (propAssignment.initializer as Identifier).escapedText,
+              (propAssignment.initializer as Identifier).escapedText as string,
             );
           }
           break;
@@ -377,7 +390,7 @@ export const objectLiteralToObjectMap = (
       }
     }
 
-    final[propName] = val;
+    final[propName] = val as Expression | ObjectMap;
   }
 
   return final;

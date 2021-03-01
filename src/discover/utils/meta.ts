@@ -1,6 +1,12 @@
 /* eslint-disable no-bitwise */
+import { bold } from 'kleur';
 import {
+  ClassElement,
+  GetAccessorDeclaration,
   Identifier,
+  isIdentifier,
+  isPropertyDeclaration,
+  isTypeReferenceNode,
   MethodDeclaration,
   NodeBuilderFlags,
   PropertyDeclaration,
@@ -9,16 +15,13 @@ import {
   TypeChecker,
   TypeFlags,
   TypeFormatFlags,
-  UnionType,
-  ClassElement,
   TypeNode,
-  isTypeReferenceNode,
-  isIdentifier,
-  GetAccessorDeclaration,
-  isPropertyDeclaration,
+  UnionType,
 } from 'typescript';
-import { bold } from 'kleur';
+
 import { LogLevel, reportDiagnosticByNode } from '../../core/log';
+import { arrayOnlyUnique } from '../../utils/array';
+import { camelCaseToDashCase } from '../../utils/string';
 import { isUndefined } from '../../utils/unit';
 import {
   DocTag,
@@ -27,8 +30,10 @@ import {
   MethodTypeInfo,
   PropMeta,
   PropTypeInfo,
+  SlotMeta,
   TypeText,
 } from '../ComponentMeta';
+import { validatePublicName } from '../validatePublicName';
 import { getDeclarationParameters, isDecoratorNamed } from './decorators';
 import {
   getDocTags,
@@ -40,16 +45,16 @@ import {
   splitJsDocTagText,
   typeToString,
 } from './transform';
-import { validatePublicName } from '../validatePublicName';
-import { arrayOnlyUnique } from '../../utils/array';
-import { camelCaseToDashCase } from '../../utils/string';
 
 export interface DefaultPropOptions {
   attribute?: string;
   reflect?: boolean;
 }
 
-export const getMemberName = (checker: TypeChecker, node: ClassElement) => {
+export const getMemberName = (
+  checker: TypeChecker,
+  node: ClassElement,
+): string | undefined => {
   const identifier = node.name as Identifier;
   const symbol = checker.getSymbolAtLocation(identifier);
   return symbol?.escapedName as string | undefined;
@@ -212,6 +217,7 @@ export function buildEventMeta<T>(
   return meta as EventMeta;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function buildMetaFromTags(
   docTags: DocTag[],
   tagName: string,
@@ -252,7 +258,7 @@ export function buildMetaFromTags(
   });
 }
 
-export function buildSlotMeta(tags: DocTag[]) {
+export function buildSlotMeta(tags: DocTag[]): SlotMeta[] {
   let defaultSlots = 0;
   let hasSeenDefaultSlot = false;
 
@@ -315,6 +321,7 @@ export const getPropTypeInfo = (
   };
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getEventTypeInfo = (
   typeChecker: TypeChecker,
   node: PropertyDeclaration,

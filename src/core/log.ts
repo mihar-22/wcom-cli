@@ -4,16 +4,17 @@ import {
   bgRed,
   bgWhite,
   bgYellow,
+  black,
   bold,
   dim,
-  black,
-  white,
   green,
+  white,
 } from 'kleur';
-import { Node, SourceFile } from 'typescript';
 import normalizePath from 'normalize-path';
-import { isFunction, isObject } from '../utils/unit';
+import { Node, SourceFile } from 'typescript';
+
 import { splitLineBreaks } from '../utils/string';
+import { isFunction, isObject } from '../utils/unit';
 
 export enum LogLevel {
   Silent = 0,
@@ -33,7 +34,7 @@ export const LogLevelColor = Object.freeze({
 
 let currentLogLevel = LogLevel.Info;
 
-export function mapLogLevelStringToNumber(level: string) {
+export function mapLogLevelStringToNumber(level: string): LogLevel {
   switch (level) {
     case 'silent':
       return LogLevel.Silent;
@@ -50,7 +51,7 @@ export function mapLogLevelStringToNumber(level: string) {
   }
 }
 
-export function mapLogLevelToString(level: LogLevel) {
+export function mapLogLevelToString(level: LogLevel): string {
   switch (level) {
     case LogLevel.Error:
       return 'error';
@@ -67,11 +68,11 @@ export function mapLogLevelToString(level: LogLevel) {
   }
 }
 
-export const clearTerminal = () => {
+export const clearTerminal = (): void => {
   console.clear();
 };
 
-export function setGlobalLogLevel(level: LogLevel) {
+export function setGlobalLogLevel(level: LogLevel): void {
   currentLogLevel = level;
 }
 
@@ -216,7 +217,7 @@ interface CodeFrame {
   linesAfter: string[];
 }
 
-function prettifyCodeFrame(codeFrame: CodeFrame) {
+function prettifyCodeFrame(codeFrame: CodeFrame): string {
   const { firstLineNumber, linesBefore, relevantLines, linesAfter } = codeFrame;
 
   const printLines: string[] = [];

@@ -9,6 +9,6 @@ export enum TransformerId {
   ALL = 'all',
 }
 
-export interface Transformer<ConfigType = any> {
+export interface Transformer<ConfigType = unknown> {
   transform(components: ComponentMeta[], config: ConfigType): Promise<void>;
 }
