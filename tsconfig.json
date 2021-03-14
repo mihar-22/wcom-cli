@@ -12,7 +12,7 @@
     "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "lib": ["DOM", "ES2017"],
+    "lib": ["DOM", "ESNext"],
     "moduleResolution": "Node",
     "module": "ESNext",
     "target": "ESNext"

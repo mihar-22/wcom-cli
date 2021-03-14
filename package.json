@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "author": "Rahim Alwer <rahim_alwer@outlook.com>",
-  "description": "CLI tool to discover metadata about your web components.",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "description": "Pluggable CLI tool that collects metadata about your web components and transforms it into whatever you like.",
+  "main": "dist/index.js",
   "homepage": "https://github.com/mihar-22/wcom-cli",
   "bugs": {
     "url": "https://github.com/mihar-22/wcom-cli/issues"
@@ -18,11 +17,10 @@
     "dist/"
   ],
   "scripts": {
-    "build": "run-s clean build:cjs build:esm",
-    "build:cjs": "tsc -m commonjs -p tsconfig-build.json --outDir dist/cjs",
-    "build:esm": "tsc -m es2015 -p tsconfig-build.json --outDir dist/esm",
+    "build": "run-s clean build:cjs",
+    "build:cjs": "tsc -m commonjs -p tsconfig-build.json",
     "build:watch": "npm run build:cjs -- --watch",
-    "clean": "rimraf dist @types",
+    "clean": "rimraf dist",
     "lint": "run-s lint:*",
     "lint:eslint": "eslint --ext .ts --quiet . --ignore-path .gitignore",
     "lint:prettier": "prettier . --check --ignore-path .gitignore --loglevel warn",
@@ -35,17 +33,20 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@types/require-from-string": "^1.2.0",
     "fast-glob": "^3.2.4",
     "fs-extra": "^9.0.1",
     "kleur": "^4.1.3",
     "normalize-path": "^3.0.0",
     "read-pkg-up": "^7.0.1",
+    "require-from-string": "^2.0.2",
     "yargs": "^16.1.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.6",
     "@types/node": "^14.14.16",
     "@types/normalize-path": "^3.0.0",
+    "@types/read-pkg-up": "^6.0.0",
     "@types/yargs": "^15.0.10",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
@@ -79,19 +80,23 @@
     "access": "public"
   },
   "keywords": [
-    "wcom",
-    "web-components",
-    "cli",
     "analyzer",
+    "cli",
+    "component",
     "discover",
-    "transformer",
-    "documentation",
-    "lit-element",
     "docs",
+    "documentation",
     "json",
-    "vscode",
-    "types",
+    "lit-element",
+    "markdown",
+    "metadata",
+    "parser",
+    "pluggable",
+    "plugins",
+    "transformer",
     "typescript",
-    "markdown"
+    "vscode",
+    "wcom",
+    "web-components"
   ]
 }

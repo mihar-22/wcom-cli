@@ -7,10 +7,10 @@ export const escapeQuotes = (text: string): string =>
 export const normalizeLineBreaks = (text: string): string =>
   text.replace(/\\r/g, '\n');
 
-export const splitLineBreaks = (text: string): string[] => {
+export function splitLineBreaks(text: string): string[] {
   if (typeof text !== 'string') return [];
   return normalizeLineBreaks(text).split('\n');
-};
+}
 
 export const camelCaseToDashCase = (text: string): string =>
   text.replace(/[A-Z]/g, s => `-${s.toLowerCase()}`);

@@ -1,3 +1,6 @@
 #!/usr/bin/env node
 
-require('./dist/cjs/cli').cli();
+// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
+const { cli } = require('./dist/index.js');
+
+cli();

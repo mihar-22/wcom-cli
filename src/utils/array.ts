@@ -13,12 +13,12 @@ export function arrayFlat<T>(items: (T[] | T)[]): T[] {
   return flattenArray;
 }
 
-export const arrayOnlyUnique = <T>(
+export function arrayOnlyUnique<T>(
   items: T[],
   key: keyof T,
   onDuplicateFound?: (item: T) => void,
   dontFilterNullOrUndefined = false,
-): T[] => {
+): T[] {
   const seen = new Set();
 
   return items.filter(item => {
@@ -33,4 +33,4 @@ export const arrayOnlyUnique = <T>(
 
     return isUnique;
   });
-};
+}

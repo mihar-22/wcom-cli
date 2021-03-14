@@ -4,9 +4,9 @@ import {
   logStackTrace,
   mapLogLevelStringToNumber,
   setGlobalLogLevel,
-} from '../core/log';
+} from '../utils/log';
 import { isCLIError } from './cli-error';
-import { runTransformCommand } from './commands/transform/runTransformCommand';
+import { runTransformCommand } from './commands/transform/run-transform';
 import { TransformCommandConfig } from './commands/transform/TransformCommandConfig';
 
 export function cli(): void {
@@ -14,7 +14,7 @@ export function cli(): void {
     .usage('Usage: $0 <command> [glob..] [options]')
     .command<TransformCommandConfig>({
       command: ['transform [glob..]', '$0'],
-      describe: 'Discovers and transforms components into specified formats',
+      describe: 'Discovers and transforms component metadata.',
       handler: async config => {
         setGlobalLogLevel(mapLogLevelStringToNumber(config.logLevel));
 
@@ -29,90 +29,23 @@ export function cli(): void {
         }
       },
     })
-    .example('$ $0 transform --transformers vscode', '')
-    .example('$ $0 transform src -t json vscode', '')
-    .example(
-      '$ $0 transform src/**/*.ts -t json --jsonOutFile ./components.json',
-      '',
-    )
-    .option('discovery', {
-      describe: 'Specify discoverer to use',
-      nArgs: 1,
-      choices: ['lit'],
-      alias: 'd',
-      default: 'lit',
-    })
-    .option('transformers', {
-      describe: 'Specify transformers to use',
-      choices: ['json', 'vscode', 'types', 'exports', 'markdown', 'all'],
-      array: true,
-      alias: 't',
-      requiresArg: true,
-      default: ['types'],
-    })
-    .option('dry', {
-      describe: 'Output to console instead of writing to files',
-      boolean: true,
-      default: false,
+    .example('$ $0 transform', '')
+    .option('cwd', {
+      string: true,
+      describe:
+        'The base path to use when emitting files (useful when working inside a monorepo).',
+      default: process.cwd(),
     })
     .option('logLevel', {
-      describe: 'Select logging level',
+      describe: 'Select logging level.',
       nArgs: 1,
       choices: ['silent', 'error', 'warn', 'info', 'verbose'],
       default: 'info',
     })
-    .option('cwd', {
+    .option('configFile', {
       string: true,
-      describe:
-        'The base path to use when emitting files (useful when working inside a monorepo)',
-      default: process.cwd(),
-    })
-    .option('jsonOutFile', {
-      describe:
-        'The path to where the JSON file should be output relative to `cwd`',
-      default: './components.json',
-      string: true,
-    })
-    .option('vscodeOutFile', {
-      describe:
-        'The path to where the vscode file should be output relative to `cwd`',
-      default: './vscode.html-data.json',
-      string: true,
-    })
-    .option('typesOutFile', {
-      describe:
-        'The path to where the component types (.d.ts) should be output relative to `cwd`',
-      default: './src/components.d.ts',
-      string: true,
-    })
-    .option('exportsOutFile', {
-      describe:
-        'The path to where the exports file should be output relative to `cwd`',
-      default: './src/components/index.ts',
-      string: true,
-    })
-    .option('componentsRootDir', {
-      describe: 'The root directory where components exist relative to `cwd`',
-      string: true,
-      default: './src/components',
-    })
-    .option('markdownOutDir', {
-      describe:
-        'The path to where the markdown files should be output relative to `cwd`',
-      string: true,
-      default: './docs/components',
-    })
-    .option('noMarkdownIndex', {
-      describe:
-        'Whether a markdown file that indexes all components should NOT be output',
-      boolean: true,
-      default: false,
-    })
-    .option('markdownIndexOutFile', {
-      describe:
-        'The path to where the markdown index file is output relative to `cwd`',
-      string: true,
-      default: './docs/README.md',
+      describe: 'The path to your configuration file.',
+      default: './wcom.config.ts',
     })
     .alias('v', 'version')
     .help('h')

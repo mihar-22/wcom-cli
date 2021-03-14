@@ -5,26 +5,19 @@ export type CompositeObject<T, R> = T & R;
 export const keysOfObject = <T>(obj: T): (keyof T)[] =>
   Object.keys(obj) as (keyof T)[];
 
-// TODO: Types here are kind of messed up.
-export const deepFilterObjectKeys = <
-  T extends Record<string, unknown>,
-  R extends string
->(
+export const deepFilterObjectKeys = <T, R extends string>(
   obj: T,
   omitKeys: Set<R>,
 ): Omit<T, R> => {
-  const filteredObj = {} as Omit<T, R> & Record<string, unknown>;
+  const filteredObj = {} as Omit<T, R>;
 
   if (isObject(obj)) {
     keysOfObject(obj).forEach(key => {
       const value: unknown = obj[key];
 
-      if (!omitKeys.has(key as R)) {
+      if (!omitKeys.has((key as unknown) as R)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (filteredObj as any)[key] = deepFilterObjectKeys(
-          value as Record<string, unknown>,
-          omitKeys,
-        );
+        (filteredObj as any)[key] = deepFilterObjectKeys(value, omitKeys);
       }
     });
   } else if (isArray(obj)) {
