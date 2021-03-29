@@ -10,7 +10,7 @@ import {
   PropMeta,
 } from '../plugins/ComponentMeta';
 import { keysOfObject, sortObjectsBy } from './object';
-import { isArray, isBoolean, isUndefined } from './unit';
+import { isBoolean, isUndefined } from './unit';
 
 export type MergeableComponentMetaPart =
   | PropMeta
@@ -21,6 +21,9 @@ export type MergeableComponentMetaPart =
   | CssPartMeta
   | ComponentMeta;
 
+/**
+ * Merges `x` into `y` in-place. `y` will take precedence when meta exists in both `x` and `y`.
+ */
 export function mergeComponentMeta(
   x: Partial<ComponentMeta>,
   y: ComponentMeta,
@@ -35,36 +38,48 @@ export function mergeComponentMeta(
     'dependencies',
   ]);
 
-  mergeKeys.forEach(key => {
-    if (isUndefined(x[key])) return;
+  mergeKeys.forEach(componentMetaKey => {
+    if (isUndefined(x[componentMetaKey])) return;
 
-    (x[key] as MergeableComponentMetaPart[]).forEach(mx => {
-      const my = (y[key] as MergeableComponentMetaPart[]).find(
+    const xMetas = x[componentMetaKey] as MergeableComponentMetaPart[];
+    const yMetas = y[componentMetaKey] as MergeableComponentMetaPart[];
+
+    xMetas.forEach(xMeta => {
+      const yMeta = yMetas.find(
         m =>
-          m.name === mx.name ||
+          m.name === xMeta.name ||
           (!isUndefined((m as ComponentMeta).tagName) &&
-            (m as ComponentMeta).tagName === (mx as ComponentMeta).tagName),
+            (m as ComponentMeta).tagName === (xMeta as ComponentMeta).tagName),
       );
 
-      if (!isUndefined(my)) {
+      if (!isUndefined(yMeta)) {
         // Means it's already included in `dependencies[]` so skip.
-        if (!isUndefined((my as ComponentMeta).tagName)) {
+        if (!isUndefined((yMeta as ComponentMeta).tagName)) {
           return;
         }
 
-        keysOfObject(mx).forEach(subKey => {
-          if (isArray(mx[subKey])) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            y[subKey] = [...mx[subKey], ...my[subKey]];
-          } else if (isBoolean(mx[subKey]) && !my[subKey]) {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            my[subKey] = mx[subKey];
+        keysOfObject(xMeta).forEach(partKey => {
+          if ((partKey as keyof PropMeta) === 'docTags') {
+            const xDocTags = xMeta[partKey] as DocTagMeta[];
+            const yDocTags = yMeta[partKey] as DocTagMeta[];
+
+            xDocTags.forEach(xTag => {
+              const yTag = yDocTags.find(yTag => yTag.name === xTag.name);
+              if (isUndefined(yTag)) {
+                yDocTags.push(xTag);
+              }
+            });
+          } else if (
+            (partKey as keyof PropMeta) === 'documentation' &&
+            isUndefined(yMeta[partKey])
+          ) {
+            (yMeta[partKey] as string) = xMeta[partKey] as string;
+          } else if (isBoolean(xMeta[partKey]) && !yMeta[partKey]) {
+            (yMeta[partKey] as boolean) = xMeta[partKey] as boolean;
           }
         });
       } else {
-        (y[key] as MergeableComponentMetaPart[]).push(mx);
+        yMetas.push(xMeta);
       }
     });
   });
