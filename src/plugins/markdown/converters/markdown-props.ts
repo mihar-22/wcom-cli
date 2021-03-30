@@ -36,7 +36,9 @@ export function propsToMarkdown(props: PropMeta[]): string[] {
         getPropertyColumn(prop),
         getDescriptionColumn(prop),
         `\`${prop.typeInfo.resolved}\``,
-        `\`${prop.defaultValue}\``,
+        prop.defaultValue && prop.defaultValue.length > 0
+          ? `\`${prop.defaultValue}\``
+          : '',
       ]);
     });
 
