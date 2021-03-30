@@ -67,6 +67,10 @@ export function mergeComponentMeta(
               const yTag = yDocTags.find(yTag => yTag.name === xTag.name);
               if (isUndefined(yTag)) {
                 yDocTags.push(xTag);
+                // TODO: hacky.
+                if (xTag.name === 'default') {
+                  (yMeta as PropMeta).defaultValue = xTag.text ?? '';
+                }
               }
             });
           } else if (
