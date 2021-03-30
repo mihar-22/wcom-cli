@@ -11,12 +11,20 @@ import { propsToMarkdown } from './converters/markdown-props';
 import { slotsToMarkdown } from './converters/markdown-slots';
 
 export interface MarkdownPluginConfig extends Record<string, unknown> {
-  outputPath(component: ComponentMeta, fs: PluginFs): string | string[];
+  outputPath(
+    component: ComponentMeta,
+    fs: PluginFs,
+  ): Promise<string | string[]>;
+
+  transformContent(component: ComponentMeta, content: string): Promise<string>;
 }
 
 export const MARKDOWN_PLUGIN_DEFAULT_CONFIG: MarkdownPluginConfig = {
-  outputPath(component, fs) {
+  async outputPath(component, fs) {
     return fs.resolvePath(component.source.dirPath, 'README.md');
+  },
+  async transformContent(_, content) {
+    return content;
   },
 };
 
@@ -36,6 +44,8 @@ export async function normalizeMarkdownPluginConfig(
  *
  * @option outputPath - Receives each `ComponentMeta` and it should return the path to where it's
  * respective markdown file should be output.
+ * @option transformContent - Receives each `ComponentMeta` and the new markdown content as a
+ * `string` and returns the transformed content.
  *
  * @example
  * ```ts
@@ -46,7 +56,7 @@ export async function normalizeMarkdownPluginConfig(
  * export default [
  *   markdownPlugin({
  *     // Configuration options here.
- *     outputPath(component, fs) {
+ *     async outputPath(component, fs) {
  *       return fs.resolvePath(component.source.dirPath, 'README.md');
  *     },
  *   }),
@@ -63,7 +73,7 @@ export const markdownPlugin: PluginBuilder<Partial<MarkdownPluginConfig>> = (
 
     await Promise.all(
       components.map(async component => {
-        let targetPath = normalizedConfig.outputPath(component, fs);
+        let targetPath = await normalizedConfig.outputPath(component, fs);
 
         if (isString(targetPath)) {
           targetPath = [targetPath];
@@ -73,8 +83,11 @@ export const markdownPlugin: PluginBuilder<Partial<MarkdownPluginConfig>> = (
           await updateMarkdown(
             path,
             serializeDefaultComponentDoc(component),
-            userContent =>
-              serializeComponentDoc(userContent, component, components),
+            async userContent =>
+              normalizedConfig.transformContent(
+                component,
+                serializeComponentDoc(userContent, component, components),
+              ),
             fs,
           );
         });
@@ -86,7 +99,7 @@ export const markdownPlugin: PluginBuilder<Partial<MarkdownPluginConfig>> = (
 async function updateMarkdown(
   targetPath: string,
   defaultMarkdown: string,
-  serializeNewContent: (userContent: string) => string,
+  serializeNewContent: (userContent: string) => Promise<string>,
   fs: PluginFs,
 ) {
   const isUpdate = await fs.pathExists(targetPath);
@@ -94,7 +107,7 @@ async function updateMarkdown(
     ? defaultMarkdown
     : (await fs.readFile(targetPath)).toString();
   const userContent = isUpdate ? getUserContent(content) : content;
-  const newContent = serializeNewContent(userContent);
+  const newContent = await serializeNewContent(userContent);
   const hasContentChanged = !isUpdate || content !== newContent;
   if (!hasContentChanged) return;
   if (!isUpdate) await fs.ensureFile(targetPath);
