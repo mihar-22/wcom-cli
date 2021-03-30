@@ -91,10 +91,6 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
   prop.documentation = getDocumentation(checker, identifier);
   prop.docTags = getDocTags(declaration);
 
-  prop.defaultValue = isPropertyDeclaration(declaration)
-    ? declaration.initializer?.getText()
-    : findDocTag(prop.docTags, 'default')?.text;
-
   prop.readonly =
     (!isProperty && !hasSetter) ||
     (!hasSetter && hasDocTag(prop.docTags, 'readonly'));
@@ -113,6 +109,11 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
   prop.optional =
     !isUndefined(declaration.questionToken) ||
     hasDocTag(prop.docTags, 'optional');
+
+  prop.defaultValue = isPropertyDeclaration(declaration)
+    ? declaration.initializer?.getText()
+    : findDocTag(prop.docTags, 'default')?.text ??
+      (prop.optional ? 'undefined' : '');
 
   return prop as PropMeta;
 }
