@@ -112,8 +112,9 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
 
   prop.defaultValue = isPropertyDeclaration(declaration)
     ? declaration.initializer?.getText()
-    : findDocTag(prop.docTags, 'default')?.text ??
-      (prop.optional ? 'undefined' : '');
+    : findDocTag(prop.docTags, 'default')?.text;
+
+  prop.defaultValue = prop.defaultValue ?? (prop.optional ? 'undefined' : '');
 
   return prop as PropMeta;
 }
