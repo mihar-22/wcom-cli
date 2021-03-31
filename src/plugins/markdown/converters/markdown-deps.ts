@@ -1,4 +1,4 @@
-import { dirname, relative } from 'path';
+import { relative } from 'path';
 
 import { isUndefined } from '../../../utils/unit';
 import { ComponentMeta } from '../../ComponentMeta';
@@ -12,9 +12,9 @@ function getDependencyLink(
 
   if (dependency) {
     const relativePathToDependency = relative(
-      dirname(component.source.filePath),
-      dirname(dependency.source.filePath),
-    ).replace('../', './');
+      component.source.dirPath,
+      dependency.source.dirPath,
+    );
 
     return `[${depTagName}](${relativePathToDependency})`;
   }
@@ -30,7 +30,7 @@ export function depsToMarkdown(
   const hasDependents = component.dependents.length > 0;
   const hasDependencies = component.dependencies.length > 0;
 
-  if (!hasDependencies || !hasDependents) return content;
+  if (!hasDependencies && !hasDependents) return content;
 
   content.push('## Dependencies');
   content.push('');
