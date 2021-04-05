@@ -4,21 +4,22 @@ import { isUndefined } from '../../utils';
 import { ComponentMeta } from '../ComponentMeta';
 import { PluginBuilder } from '../Plugin';
 
-export interface CustomElementsPluginConfig extends Record<string, unknown> {
+export interface CustomElementsManifestPluginConfig
+  extends Record<string, unknown> {
   cwd: string;
   outFile: string;
 }
 
-export const CUSTOM_ELEMENTS_PLUGIN_DEFAULT_CONFIG: CustomElementsPluginConfig = {
+export const CUSTOM_ELEMENTS_MANIFEST_PLUGIN_DEFAULT_CONFIG: CustomElementsManifestPluginConfig = {
   cwd: process.cwd(),
   outFile: './custom-elements.json',
 };
 
 export async function normalizeCustomElementsPluginConfig(
-  config: Partial<CustomElementsPluginConfig>,
-): Promise<CustomElementsPluginConfig> {
+  config: Partial<CustomElementsManifestPluginConfig>,
+): Promise<CustomElementsManifestPluginConfig> {
   return {
-    ...CUSTOM_ELEMENTS_PLUGIN_DEFAULT_CONFIG,
+    ...CUSTOM_ELEMENTS_MANIFEST_PLUGIN_DEFAULT_CONFIG,
     ...config,
   };
 }
@@ -34,18 +35,18 @@ export async function normalizeCustomElementsPluginConfig(
  * ```ts
  * // wcom.config.ts
  *
- * import { customElementsPlugin } from '@wcom/cli';
+ * import { customElementsManifestPlugin } from '@wcom/cli';
  *
  * export default [
- *   customElementsPlugin({
+ *   customElementsManifestPlugin({
  *     // Configuration options here.
  *     outFile: './custom-elements.json',
  *   }),
  * ];
  * ```
  */
-export const customElementsPlugin: PluginBuilder<
-  Partial<CustomElementsPluginConfig>
+export const customElementsManifestPlugin: PluginBuilder<
+  Partial<CustomElementsManifestPluginConfig>
 > = (config = {}) => ({
   name: 'wcom-custom-elements',
   async transform(components, fs) {

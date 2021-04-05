@@ -2,24 +2,27 @@ import { escapeQuotes } from '../../utils/string';
 import { isUndefined } from '../../utils/unit';
 import { PluginBuilder, PluginFs } from '../Plugin';
 
-export interface VscodePluginConfig extends Record<string, unknown> {
+export interface VscodeCustomDataPluginConfig extends Record<string, unknown> {
   cwd: string;
   outFile: string;
 }
 
-export const VSCODE_PLUGIN_DEFAULT_CONFIG: VscodePluginConfig = {
+export const VSCODE_CUSTOM_DATA_PLUGIN_DEFAULT_CONFIG: VscodeCustomDataPluginConfig = {
   cwd: process.cwd(),
   outFile: './vscode.html-data.json',
 };
 
-export async function normalizeVscodePluginConfig(
-  config: Partial<VscodePluginConfig>,
+export async function normalizeVscodeCustomDataPluginConfig(
+  config: Partial<VscodeCustomDataPluginConfig>,
   fs: PluginFs,
-): Promise<VscodePluginConfig> {
-  return fs.resolveConfigPaths(config.cwd ?? VSCODE_PLUGIN_DEFAULT_CONFIG.cwd, {
-    ...VSCODE_PLUGIN_DEFAULT_CONFIG,
-    ...config,
-  });
+): Promise<VscodeCustomDataPluginConfig> {
+  return fs.resolveConfigPaths(
+    config.cwd ?? VSCODE_CUSTOM_DATA_PLUGIN_DEFAULT_CONFIG.cwd,
+    {
+      ...VSCODE_CUSTOM_DATA_PLUGIN_DEFAULT_CONFIG,
+      ...config,
+    },
+  );
 }
 
 /**
@@ -33,23 +36,26 @@ export async function normalizeVscodePluginConfig(
  * ```ts
  * // wcom.config.ts
  *
- * import { vscodePlugin } from '@wcom/cli';
+ * import { vscodeCustomDataPlugin } from '@wcom/cli';
  *
  * export default [
- *   vscodePlugin({
+ *   vscodeCustomDataPlugin({
  *     // Configuration options here.
  *     outFile: './vscode.html-data.json',
  *   }),
  * ];
  * ```
  */
-export const vscodePlugin: PluginBuilder<Partial<VscodePluginConfig>> = (
-  config = {},
-) => ({
+export const vscodeCustomDataPlugin: PluginBuilder<
+  Partial<VscodeCustomDataPluginConfig>
+> = (config = {}) => ({
   name: 'wcom-vscode',
 
   async transform(components, fs) {
-    const normalizedConfig = await normalizeVscodePluginConfig(config, fs);
+    const normalizedConfig = await normalizeVscodeCustomDataPluginConfig(
+      config,
+      fs,
+    );
 
     const output: HTMLDataV1 = {
       version: 1.1,

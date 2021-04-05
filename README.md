@@ -64,19 +64,19 @@ First create a `wcom.config.ts` file at the root your project directory and incl
 
 // Hover over each plugin here in your editor to see what options are available.
 import {
-  customElements,
-  jsonPlugin,
   litPlugin,
+  jsonPlugin,
   markdownPlugin,
-  vscodePlugin,
+  vscodeCustomDataPlugin,
+  customElementsManifestPlugin,
 } from '@wcom/cli';
 
 export default [
-  customElements(),
-  jsonPlugin(),
   litPlugin(),
+  jsonPlugin(),
   markdownPlugin(),
-  vscodePlugin(),
+  vscodeCustomDataPlugin(),
+  customElementsManifestPlugin(),
 ];
 ```
 
