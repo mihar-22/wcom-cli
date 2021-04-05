@@ -10,9 +10,15 @@ import {
 } from 'typescript';
 
 import { MethodMeta, MethodTypeInfo } from '../../plugins/ComponentMeta';
+import { isUndefined } from '../unit';
 import { getDocumentation } from './meta-doc';
 import { getDocTags, hasDocTag } from './meta-doc-tag';
-import { getTypeReferences, typeToString } from './meta-type';
+import { getPropTypeInfo } from './meta-prop';
+import {
+  getTypeReferences,
+  typeTextFromTSType,
+  typeToString,
+} from './meta-type';
 
 export function buildMethodMetaFromDeclarationOrSignature(
   checker: TypeChecker,
@@ -49,10 +55,24 @@ export function buildMethodMetaFromDeclarationOrSignature(
     },
   };
 
+  const parameters = declaration.parameters.map(parameter => ({
+    node: parameter,
+    name: (parameter.name as Identifier).escapedText as string,
+    typeText: typeTextFromTSType(checker.getTypeAtLocation(parameter)),
+    typeInfo: getPropTypeInfo(
+      checker,
+      parameter,
+      checker.getTypeAtLocation(parameter),
+    ),
+    optional: !isUndefined(parameter.questionToken),
+    defaultValue: parameter.initializer?.getText(),
+  }));
+
   method.node = declaration;
   method.name = name;
   method.static = isStatic;
   method.typeInfo = typeInfo;
+  method.parameters = parameters;
   method.signature = signature;
   method.returnType = returnType;
   method.docTags = getDocTags(declaration);

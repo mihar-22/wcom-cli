@@ -67,7 +67,7 @@ export async function normalizeJsonPluginConfig(
  * ```
  */
 export const jsonPlugin: PluginBuilder<Partial<JsonPluginConfig>> = (
-  config: Partial<JsonPluginConfig> = {},
+  config = {},
 ) => ({
   name: 'wcom-json',
 

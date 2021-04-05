@@ -64,7 +64,7 @@ export async function normalizeMarkdownPluginConfig(
  * ```
  */
 export const markdownPlugin: PluginBuilder<Partial<MarkdownPluginConfig>> = (
-  config: Partial<MarkdownPluginConfig> = {},
+  config = {},
 ) => ({
   name: 'wcom-markdown',
 

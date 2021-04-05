@@ -3,6 +3,7 @@ import {
   Identifier,
   isPropertyDeclaration,
   isPropertySignature,
+  ParameterDeclaration,
   PropertyDeclaration,
   PropertySignature,
   SyntaxKind,
@@ -123,6 +124,7 @@ export function getPropTypeInfo(
   typeChecker: TypeChecker,
   node:
     | PropertyDeclaration
+    | ParameterDeclaration
     | PropertySignature
     | GetAccessorDeclaration
     | Identifier,

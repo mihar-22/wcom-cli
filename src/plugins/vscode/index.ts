@@ -44,7 +44,7 @@ export async function normalizeVscodePluginConfig(
  * ```
  */
 export const vscodePlugin: PluginBuilder<Partial<VscodePluginConfig>> = (
-  config: Partial<VscodePluginConfig> = {},
+  config = {},
 ) => ({
   name: 'wcom-vscode',
 

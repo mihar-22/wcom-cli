@@ -47,9 +47,19 @@ export interface MethodTypeInfo {
   references: TypeReferences;
 }
 
+export interface ParameterMeta {
+  node: Node;
+  name: string;
+  typeText: TypeText;
+  typeInfo: PropTypeInfo;
+  optional: boolean;
+  defaultValue?: string;
+}
+
 export interface MethodMeta {
   node: Node;
   name: string;
+  parameters: ParameterMeta[];
   typeInfo: MethodTypeInfo;
   signature: Signature;
   returnType: Type;
