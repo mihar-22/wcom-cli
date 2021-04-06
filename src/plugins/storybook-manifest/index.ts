@@ -156,20 +156,24 @@ export const storybookManifestPlugin: PluginBuilder<
  * @link https://github.com/storybookjs/storybook/blob/next/addons/docs/src/frameworks/web-components/custom-elements.ts
  * @schema https://github.com/webcomponents/custom-elements-manifest
  */
-export interface StorybookManifest {
-  tags: StorybookCustomElement[];
+export interface StorybookManifest<
+  ItemType extends StorybookItem = StorybookItem
+> {
+  tags: StorybookCustomElement<ItemType>[];
 }
 
-export interface StorybookCustomElement {
+export interface StorybookCustomElement<
+  ItemType extends StorybookItem = StorybookItem
+> {
   name: string;
   description: string;
-  attributes?: StorybookItem[];
-  properties?: StorybookItem[];
-  events?: StorybookItem[];
-  methods?: StorybookItem[];
-  slots?: StorybookItem[];
-  cssProperties?: StorybookItem[];
-  cssParts?: StorybookItem[];
+  attributes?: ItemType[];
+  properties?: ItemType[];
+  events?: ItemType[];
+  methods?: ItemType[];
+  slots?: ItemType[];
+  cssProperties?: ItemType[];
+  cssParts?: ItemType[];
 }
 
 export interface StorybookItem extends Record<string, unknown> {
