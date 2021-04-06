@@ -1,4 +1,5 @@
 import {
+  ComponentMeta,
   CssPartMeta,
   CssPropMeta,
   EventMeta,
@@ -11,6 +12,7 @@ import { PluginBuilder } from '../Plugin';
 export interface StorybookManifestPluginConfig extends Record<string, unknown> {
   cwd: string;
   outFile: string;
+  includeExamples: boolean;
   extendAttribute?(attribute: PropMeta): Partial<StorybookItem> | undefined;
   extendProperty?(property: PropMeta): Partial<StorybookItem> | undefined;
   extendMethod?(method: MethodMeta): Partial<StorybookItem> | undefined;
@@ -22,6 +24,7 @@ export interface StorybookManifestPluginConfig extends Record<string, unknown> {
 
 export const STORYBOOK_MANIFEST_PLUGIN_DEFAULT_CONFIG: StorybookManifestPluginConfig = {
   cwd: process.cwd(),
+  includeExamples: true,
   outFile: './storybook.json',
 };
 
@@ -40,6 +43,7 @@ export async function normalizeStorybookManifestPluginConfig(
  *
  * @option cwd - The current working directory, defaults to `process.cwd()`.
  * @option outFile - Custom path to where the manifest file should be output.
+ * @option includeExamples - Whether any examples should be appended to the component description.
  * @option extendAttribute - Can be used to extend the JSON output of component attributes.
  * @option extendProperty - Can be used to extend the JSON output of component properties.
  * @option extendMethod - Can be used to extend the JSON output of component methods.
@@ -92,10 +96,18 @@ export const storybookManifestPlugin: PluginBuilder<
       config,
     );
 
+    const buildDescription = (component: ComponentMeta) =>
+      normalizedConfig.includeExamples
+        ? `${component.documentation ?? ''}\n\n${component.docTags
+            .filter(tag => tag.name === 'example')
+            .map(tag => tag.text)
+            .join('\n\n')}`
+        : component.documentation ?? '';
+
     const output: StorybookManifest = {
       tags: components.map(component => ({
         name: component.tagName!,
-        description: component.documentation ?? '',
+        description: buildDescription(component),
         attributes: undefined,
         properties: component.props
           .filter(prop => !prop.static && !prop.internal)
