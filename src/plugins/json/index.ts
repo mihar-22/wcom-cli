@@ -5,6 +5,7 @@ export type JsonPluginIgnoredKeys =
   | 'symbol'
   | 'declaration'
   | 'decorator'
+  | 'enumDeclaration'
   | 'type'
   | 'node'
   | 'file'
@@ -15,6 +16,7 @@ export const JSON_PLUGIN_IGNORED_KEYS = new Set<JsonPluginIgnoredKeys>([
   'symbol',
   'declaration',
   'decorator',
+  'enumDeclaration',
   'type',
   'node',
   'file',

@@ -1,8 +1,12 @@
 import {
+  EnumDeclaration,
   GetAccessorDeclaration,
   Identifier,
+  isEnumDeclaration,
+  isPropertyAccessExpression,
   isPropertyDeclaration,
   isPropertySignature,
+  LiteralType,
   ParameterDeclaration,
   PropertyDeclaration,
   PropertySignature,
@@ -45,6 +49,7 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
   const identifier = declaration.name as Identifier;
   const symbol = checker.getSymbolAtLocation(identifier)!;
   const type = checker.getTypeAtLocation(declaration);
+  const typeDeclaration = type.aliasSymbol?.declarations[0];
   const name = symbol.escapedName as string;
   const isProperty =
     isPropertyDeclaration(declaration) || isPropertySignature(declaration);
@@ -116,6 +121,23 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
     : findDocTag(prop.docTags, 'default')?.text;
 
   prop.defaultValue = prop.defaultValue ?? (prop.optional ? 'undefined' : '');
+
+  prop.enum = typeDeclaration && isEnumDeclaration(typeDeclaration);
+
+  prop.enumDeclaration = prop.enum
+    ? (typeDeclaration as EnumDeclaration)
+    : undefined;
+
+  prop.enumDefaultValue =
+    prop.enum &&
+    isPropertyDeclaration(declaration) &&
+    !isUndefined(declaration.initializer) &&
+    isPropertyAccessExpression(declaration.initializer)
+      ? String(
+          (checker.getTypeAtLocation(declaration.initializer) as LiteralType)
+            .value,
+        )
+      : undefined;
 
   return prop as PropMeta;
 }

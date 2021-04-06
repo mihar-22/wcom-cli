@@ -1,4 +1,4 @@
-import { Node, Signature, SourceFile, Type } from 'typescript';
+import { EnumDeclaration, Node, Signature, SourceFile, Type } from 'typescript';
 
 export type TypeText =
   | 'any'
@@ -39,6 +39,9 @@ export interface PropMeta {
   deprecated: boolean;
   defaultValue: string;
   documentation?: string;
+  enum: boolean;
+  enumDefaultValue?: string;
+  enumDeclaration?: EnumDeclaration;
 }
 
 export interface MethodTypeInfo {
