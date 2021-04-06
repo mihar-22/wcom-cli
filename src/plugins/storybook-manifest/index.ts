@@ -96,7 +96,7 @@ export const storybookManifestPlugin: PluginBuilder<
       tags: components.map(component => ({
         name: component.tagName!,
         description: component.documentation ?? '',
-        attributes: [],
+        attributes: undefined,
         properties: component.props
           .filter(prop => !prop.static && !prop.internal)
           .map(prop => ({
