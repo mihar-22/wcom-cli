@@ -1,4 +1,3 @@
-import { isUndefined } from '../../utils';
 import {
   CssPartMeta,
   CssPropMeta,
@@ -97,21 +96,12 @@ export const storybookManifestPlugin: PluginBuilder<
       tags: components.map(component => ({
         name: component.tagName!,
         description: component.documentation ?? '',
-        attributes: component.props
-          .filter(prop => !prop.internal && !isUndefined(prop.attribute))
-          .map(prop => ({
-            // Leave space on purpose otherwise Storybook merges props/attributes that have same name.
-            name: `${prop.attribute} `,
-            description: prop.documentation ?? '',
-            type: prop.typeInfo.original,
-            default:
-              prop.defaultValue.length > 0 ? prop.defaultValue : undefined,
-            ...(normalizedConfig.extendAttribute?.(prop) ?? {}),
-          })),
+        attributes: [],
         properties: component.props
           .filter(prop => !prop.static && !prop.internal)
           .map(prop => ({
             name: prop.name,
+            attribute: prop.attribute,
             description: prop.documentation ?? '',
             type: prop.typeInfo.original,
             default:
