@@ -65,7 +65,7 @@ First create a `wcom.config.ts` file at the root your project directory and incl
 
 // Hover over each plugin here in your editor to see what options are available.
 import {
-  litPlugin,
+  litElementPlugin,
   jsonPlugin,
   markdownPlugin,
   storybookManifestPlugin,
@@ -74,7 +74,7 @@ import {
 } from '@wcom/cli';
 
 export default [
-  litPlugin(),
+  litElementPlugin(),
   jsonPlugin(),
   markdownPlugin(),
   storybookManifestPlugin(),
@@ -93,7 +93,7 @@ For more information call `wcom transform -h` to see what arguments are availabl
 
 ## Documenting Components
 
-Here's an example of how you can document a component when using the `litPlugin`...
+Here's an example of how you can document a component when using the `litElementPlugin`...
 
 ````ts
 /**
@@ -177,7 +177,7 @@ this. See the next section for more information on how you can go about achievin
  * `build` steps (Phase 2) where some basic knowledge of how the TS compiler works is needed,
  * otherwise you're good to go!
  *
- * Take advantage of existing plugins such as `litPlugin` to do the hard work, so you
+ * Take advantage of existing plugins such as `litElementPlugin` to do the hard work, so you
  * can create your own plugins that focus on the simple stuff.
  */
 export interface Plugin<ComponentRootNodeType extends Node = Node> {
@@ -276,11 +276,20 @@ example above, the imports listed directly under the comment `// Dependencies` w
 ```ts
 // wcom.config.ts
 
-import { litPlugin, markdownPlugin, Plugin, ComponentMeta } from '@wcom/cli';
+import {
+  litElementPlugin,
+  markdownPlugin,
+  Plugin,
+  ComponentMeta,
+} from '@wcom/cli';
 import { escapeQuotes, isUndefined } from '@wcom/cli/dist/utils';
 import { SourceFile, isImportDeclaration } from 'typescript';
 
-export default [litPlugin(), dependencyDiscoveryPlugin(), markdownPlugin()];
+export default [
+  litElementPlugin(),
+  dependencyDiscoveryPlugin(),
+  markdownPlugin(),
+];
 
 function dependencyDiscoveryPlugin(): Plugin {
   return {
@@ -353,11 +362,11 @@ the `markdownPlugin`...
 ```ts
 // wcom.config.ts
 
-import { litPlugin, markdownPlugin } from '@wcom/cli';
+import { litElementPlugin, markdownPlugin } from '@wcom/cli';
 import prettier from 'prettier';
 
 export default [
-  litPlugin(),
+  litElementPlugin(),
   markdownPlugin({
     async transformContent(_, content) {
       return prettier.format(content);

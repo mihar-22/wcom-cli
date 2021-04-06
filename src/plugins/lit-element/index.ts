@@ -40,18 +40,18 @@ import {
 } from '../ComponentMeta';
 import { PluginBuilder } from '../Plugin';
 
-export interface LitPropOptions {
+export interface LitElementPropOptions {
   attribute?: string;
   reflect?: boolean;
 }
 
-export interface LitEventOptions {
+export interface LitElementEventOptions {
   name?: string;
   bubbles?: boolean;
   composed?: boolean;
 }
 
-export const LIT_LIFECYCLE_METHODS = new Set([
+export const LIT_ELEMENT_LIFECYCLE_METHODS = new Set([
   'createRenderRoot',
   'connectedCallback',
   'disconnectedCallback',
@@ -64,15 +64,15 @@ export const LIT_LIFECYCLE_METHODS = new Set([
   'updateComplete',
 ]);
 
-export type LitPluginConfig = Record<string, unknown>;
+export type LitElementPluginConfig = Record<string, unknown>;
 
-export const LIT_PLUGIN_DEFAULT_CONFIG: LitPluginConfig = {};
+export const LIT_ELEMENT_PLUGIN_DEFAULT_CONFIG: LitElementPluginConfig = {};
 
-export async function normalizeLitPluginConfig(
-  config: Partial<LitPluginConfig>,
-): Promise<LitPluginConfig> {
+export async function normalizeLitElementPluginConfig(
+  config: Partial<LitElementPluginConfig>,
+): Promise<LitElementPluginConfig> {
   return {
-    ...LIT_PLUGIN_DEFAULT_CONFIG,
+    ...LIT_ELEMENT_PLUGIN_DEFAULT_CONFIG,
     ...config,
   };
 }
@@ -91,23 +91,23 @@ export async function normalizeLitPluginConfig(
  * ```ts
  * // wcom.config.ts
  *
- * import { litPlugin } from '@wcom/cli';
+ * import { litElementPlugin } from '@wcom/cli';
  *
  * export default [
- *   litPlugin({
+ *   litElementPlugin({
  *     // Configuration options here.
  *   }),
  * ];
  * ```
  */
-export const litPlugin: PluginBuilder<
-  Partial<LitPluginConfig>,
+export const litElementPlugin: PluginBuilder<
+  Partial<LitElementPluginConfig>,
   ClassDeclaration
 > = () => {
   let checker: TypeChecker;
 
   return {
-    name: 'wcom-lit',
+    name: 'wcom-lit-element',
 
     async init(program) {
       checker = program.getTypeChecker();
@@ -175,7 +175,7 @@ function findProps(
         (isGetAccessor(node) && !isMemberPrivate(node)),
     )
     .map(node =>
-      buildPropMetaFromDeclarationOrSignature<LitPropOptions>(
+      buildPropMetaFromDeclarationOrSignature<LitElementPropOptions>(
         checker,
         node as PropertyDeclaration | GetAccessorDeclaration,
         'property',
@@ -195,7 +195,7 @@ function findMethods(
     .filter(
       node =>
         !RESERVED_PUBLIC_MEMBERS.has(getMemberName(checker, node) ?? '') &&
-        !LIT_LIFECYCLE_METHODS.has(getMemberName(checker, node)!),
+        !LIT_ELEMENT_LIFECYCLE_METHODS.has(getMemberName(checker, node)!),
     )
     .map(node => buildMethodMetaFromDeclarationOrSignature(checker, node));
 }
