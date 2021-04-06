@@ -1,9 +1,24 @@
 import { isUndefined } from '../../utils';
+import {
+  CssPartMeta,
+  CssPropMeta,
+  EventMeta,
+  MethodMeta,
+  PropMeta,
+  SlotMeta,
+} from '../ComponentMeta';
 import { PluginBuilder } from '../Plugin';
 
 export interface StorybookManifestPluginConfig extends Record<string, unknown> {
   cwd: string;
   outFile: string;
+  extendAttribute?(attribute: PropMeta): Partial<StorybookItem> | undefined;
+  extendProperty?(property: PropMeta): Partial<StorybookItem> | undefined;
+  extendMethod?(method: MethodMeta): Partial<StorybookItem> | undefined;
+  extendEvent?(event: EventMeta): Partial<StorybookItem> | undefined;
+  extendSlot?(slot: SlotMeta): Partial<StorybookItem> | undefined;
+  extendCssProperty?(cssProp: CssPropMeta): Partial<StorybookItem> | undefined;
+  extendCssPart?(cssPart: CssPartMeta): Partial<StorybookItem> | undefined;
 }
 
 export const STORYBOOK_MANIFEST_PLUGIN_DEFAULT_CONFIG: StorybookManifestPluginConfig = {
@@ -26,6 +41,13 @@ export async function normalizeStorybookManifestPluginConfig(
  *
  * @option cwd - The current working directory, defaults to `process.cwd()`.
  * @option outFile - Custom path to where the manifest file should be output.
+ * @option extendAttribute - Can be used to extend the JSON output of component attributes.
+ * @option extendProperty - Can be used to extend the JSON output of component properties.
+ * @option extendMethod - Can be used to extend the JSON output of component methods.
+ * @option extendEvent - Can be used to extend the JSON output of component events.
+ * @option extendSlot - Can be used to extend the JSON output of component slots.
+ * @option extendCssProperty - Can be used to extend the JSON output of component CSS properties.
+ * @option extendCssPart - Can be used to extend the JSON output of component CSS parts.
  *
  * @example
  * ```ts
@@ -84,6 +106,7 @@ export const storybookManifestPlugin: PluginBuilder<
             type: prop.typeInfo.original,
             default:
               prop.defaultValue.length > 0 ? prop.defaultValue : undefined,
+            ...(normalizedConfig.extendAttribute?.(prop) ?? {}),
           })),
         properties: component.props
           .filter(prop => !prop.static && !prop.internal)
@@ -93,11 +116,13 @@ export const storybookManifestPlugin: PluginBuilder<
             type: prop.typeInfo.original,
             default:
               prop.defaultValue.length > 0 ? prop.defaultValue : undefined,
+            ...(normalizedConfig.extendProperty?.(prop) ?? {}),
           })),
         events: component.events.map(event => ({
           name: event.name,
           description: event.documentation ?? '',
           type: event.typeInfo.resolved,
+          ...(normalizedConfig.extendEvent?.(event) ?? {}),
         })),
         methods: component.methods
           .filter(method => !method.static && !method.internal)
@@ -105,18 +130,22 @@ export const storybookManifestPlugin: PluginBuilder<
             name: method.name,
             description: method.documentation ?? '',
             type: method.typeInfo.signatureText,
+            ...(normalizedConfig.extendMethod?.(method) ?? {}),
           })),
         slots: component.slots.map(slot => ({
           name: slot.name,
           description: slot.description ?? '',
+          ...(normalizedConfig.extendSlot?.(slot) ?? {}),
         })),
         cssProperties: component.cssProps.map(cssProp => ({
           name: cssProp.name,
           description: cssProp.description ?? '',
+          ...(normalizedConfig.extendCssProperty?.(cssProp) ?? {}),
         })),
         cssParts: component.cssParts.map(cssPart => ({
           name: cssPart.name,
           description: cssPart.description ?? '',
+          ...(normalizedConfig.extendCssPart?.(cssPart) ?? {}),
         })),
       })),
     };
@@ -138,22 +167,22 @@ export const storybookManifestPlugin: PluginBuilder<
  * @schema https://github.com/webcomponents/custom-elements-manifest
  */
 export interface StorybookManifest {
-  tags: Tag[];
+  tags: StorybookCustomElement[];
 }
 
-interface Tag {
+export interface StorybookCustomElement {
   name: string;
   description: string;
-  attributes?: TagItem[];
-  properties?: TagItem[];
-  events?: TagItem[];
-  methods?: TagItem[];
-  slots?: TagItem[];
-  cssProperties?: TagItem[];
-  cssParts?: TagItem[];
+  attributes?: StorybookItem[];
+  properties?: StorybookItem[];
+  events?: StorybookItem[];
+  methods?: StorybookItem[];
+  slots?: StorybookItem[];
+  cssProperties?: StorybookItem[];
+  cssParts?: StorybookItem[];
 }
 
-interface TagItem {
+export interface StorybookItem extends Record<string, unknown> {
   name: string;
   type?: string;
   description: string;
