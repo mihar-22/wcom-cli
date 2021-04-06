@@ -103,6 +103,10 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
   prop.internal = hasDocTag(prop.docTags, 'internal');
   prop.deprecated = hasDocTag(prop.docTags, 'deprecated');
 
+  if (prop.name === 'on') {
+    console.log(prop.internal);
+  }
+
   prop.required =
     !isUndefined((declaration as PropertyDeclaration).exclamationToken) ||
     hasDocTag(prop.docTags, 'required');

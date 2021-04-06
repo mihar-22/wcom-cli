@@ -49,7 +49,7 @@ export async function normalizeVscodeCustomDataPluginConfig(
 export const vscodeCustomDataPlugin: PluginBuilder<
   Partial<VscodeCustomDataPluginConfig>
 > = (config = {}) => ({
-  name: 'wcom-vscode',
+  name: 'wcom-vscode-custom-data',
 
   async transform(components, fs) {
     const normalizedConfig = await normalizeVscodeCustomDataPluginConfig(

@@ -15,7 +15,7 @@ export const CUSTOM_ELEMENTS_MANIFEST_PLUGIN_DEFAULT_CONFIG: CustomElementsManif
   outFile: './custom-elements.json',
 };
 
-export async function normalizeCustomElementsPluginConfig(
+export async function normalizeCustomElementsManifestPluginConfig(
   config: Partial<CustomElementsManifestPluginConfig>,
 ): Promise<CustomElementsManifestPluginConfig> {
   return {
@@ -48,9 +48,11 @@ export async function normalizeCustomElementsPluginConfig(
 export const customElementsManifestPlugin: PluginBuilder<
   Partial<CustomElementsManifestPluginConfig>
 > = (config = {}) => ({
-  name: 'wcom-custom-elements',
+  name: 'wcom-custom-elements-manifest',
   async transform(components, fs) {
-    const normalizedConfig = await normalizeCustomElementsPluginConfig(config);
+    const normalizedConfig = await normalizeCustomElementsManifestPluginConfig(
+      config,
+    );
 
     const output: manifest.Package = {
       schemaVersion: '0.1.0',

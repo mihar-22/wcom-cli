@@ -5,4 +5,5 @@ export * from './plugins/json';
 export * from './plugins/lit-element';
 export * from './plugins/markdown';
 export * from './plugins/Plugin';
+export * from './plugins/storybook-manifest';
 export * from './plugins/vscode-custom-data';

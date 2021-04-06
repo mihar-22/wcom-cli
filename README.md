@@ -37,9 +37,10 @@ The following are some plugins available out of the box:
 
 - **Lit Element:** Discovers metadata about your LitElement components (only TS support atm).
   Follows complete heritage tree (mixins/subclasses/interfaces).
-- **Custom Elements Manifest:** Transforms component metadata into a [custom elements manifest](https://github.com/webcomponents/custom-elements-manifest).
 - **JSON:** Transforms component metadata into JSON format.
 - **Markdown:** Transforms component metadata into markdown.
+- **Custom Elements Manifest:** Transforms component metadata into a [custom elements manifest](https://github.com/webcomponents/custom-elements-manifest).
+- **Storybook Manifest:** Transforms component metadata into a Storybook manifest that can be used to automatically infer arg types.
 - **VSCode Custom Data:** Transforms component metadata into [VSCode Custom Data](https://github.com/microsoft/vscode-custom-data).
 
 ## Install
@@ -67,6 +68,7 @@ import {
   litPlugin,
   jsonPlugin,
   markdownPlugin,
+  storybookManifestPlugin,
   vscodeCustomDataPlugin,
   customElementsManifestPlugin,
 } from '@wcom/cli';
@@ -75,6 +77,7 @@ export default [
   litPlugin(),
   jsonPlugin(),
   markdownPlugin(),
+  storybookManifestPlugin(),
   vscodeCustomDataPlugin(),
   customElementsManifestPlugin(),
 ];
