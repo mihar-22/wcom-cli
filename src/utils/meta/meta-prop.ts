@@ -122,7 +122,8 @@ export function buildPropMetaFromDeclarationOrSignature<T>(
 
   prop.defaultValue = prop.defaultValue ?? (prop.optional ? 'undefined' : '');
 
-  prop.enum = typeDeclaration && isEnumDeclaration(typeDeclaration);
+  prop.enum =
+    !isUndefined(typeDeclaration) && isEnumDeclaration(typeDeclaration);
 
   prop.enumDeclaration = prop.enum
     ? (typeDeclaration as EnumDeclaration)
